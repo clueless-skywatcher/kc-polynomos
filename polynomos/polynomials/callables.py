@@ -1,6 +1,6 @@
-from kc_polynomials.base_callable import BaseCallable
+from polynomos.base_callable import BaseCallable
 
-from kc_polynomials.polynomials.poly import Polynomial
+from polynomos.polynomials.poly import Polynomial
 
 __all__ = [
     "PolynomialNew",

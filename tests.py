@@ -1,7 +1,7 @@
 import unittest
 
-from kc_polynomials.polynomials.poly import Polynomial
-from kc_polynomials.polynomials.callables import *
+from polynomos.polynomials.poly import Polynomial
+from polynomos.polynomials.callables import *
 
 class TestPolynomialAddition(unittest.TestCase):
     p1 = PolynomialNew(1, 0, 2, 3, 4)
