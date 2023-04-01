@@ -14,3 +14,12 @@ def extended_euclidean(a: int, b: int):
 
     return (old_r, old_s, x)
 
+def gcd(a: int, b: int):
+    if b > a:
+        a, b = b, a
+
+    if b == 0:
+        return a
+    
+    return gcd(b, a % b)
+
