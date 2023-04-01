@@ -1,6 +1,14 @@
 from polynomos.base_callable import BaseCallable
 
-from polynomos.integers.functions import extended_euclidean
+from polynomos.integers.functions import (
+    extended_euclidean,
+    gcd
+)
+
+__all__ = [
+    "ExtendedGCD",
+    "GCD"
+]
 
 class ExtendedGCD(BaseCallable):
     '''
@@ -11,3 +19,8 @@ class ExtendedGCD(BaseCallable):
     @staticmethod
     def eval(a, b, **kwargs):
         return extended_euclidean(a, b)
+    
+class GCD(BaseCallable):
+    @staticmethod
+    def eval(a, b, **kwargs):
+        return gcd(a, b)
