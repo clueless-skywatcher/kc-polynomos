@@ -1,5 +1,9 @@
 import unittest
 
+import sys
+
+sys.path.insert(0, "../../kc-polynomials")
+
 from polynomos.polynomials.poly import Polynomial
 from polynomos.polynomials.callables import *
 
