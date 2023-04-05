@@ -23,5 +23,9 @@ class TestListInitialization(unittest.TestCase):
         self.assertEqual(self.l + PlainListNew(2, 1, 1, 2, 0), PlainListNew(3, 3, 4, 6, 5))
         self.assertRaises(ValueError, lambda: self.l + PlainListNew(1, 2, 3))
 
+    def test_length(self):
+        self.assertEqual(ListLength(self.l), 5)
+        self.assertEqual(ListLength(self.empty), 0)
+
 if __name__ == '__main__':
     unittest.main()
