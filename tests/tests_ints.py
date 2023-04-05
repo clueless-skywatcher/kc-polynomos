@@ -2,8 +2,8 @@ import unittest
 
 import sys
 
-sys.path.insert(0, "../../kc-polynomials")
-sys.path.insert(0, "../kc-polynomials")
+sys.path.insert(0, "../../kc-polynomos")
+sys.path.insert(0, "../kc-polynomos")
 
 from polynomos.integers.callables import *
 
