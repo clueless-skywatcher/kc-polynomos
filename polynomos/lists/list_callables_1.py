@@ -6,7 +6,9 @@ __all__ = [
     "ElementAt",
     "First",
     "Last",
-    "Middle"
+    "Middle",
+    "TakeN",
+    "DropN"
 ]
 
 class ElementAt(BaseCallable):
@@ -40,3 +42,19 @@ class Middle(BaseCallable):
         elif length % 2:
             return l[length // 2]
         return PlainListNew(l[(length // 2) - 1], l[length // 2])
+
+class TakeN(BaseCallable):
+    @staticmethod
+    def eval(l: PlainList, n: int, **kwargs):
+        if n > ListLength(l):
+            raise ValueError(f"n must be lesser than or equal to \
+                             the length of the list ({ListLength(l)})") 
+        return PlainListNew(*l[:n])
+    
+class DropN(BaseCallable):
+    @staticmethod
+    def eval(l: PlainList, n: int, **kwargs):
+        if n > ListLength(l):
+            raise ValueError(f"n must be lesser than or equal to \
+                             the length of the list ({ListLength(l)})") 
+        return PlainListNew(*l[n:])
