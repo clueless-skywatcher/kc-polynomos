@@ -31,5 +31,17 @@ class TestListOperationsI(unittest.TestCase):
         self.assertEqual(Middle(self.l_even), PlainListNew(11, 14))
         self.assertEqual(Middle(self.empty), None)
 
+    def test_takeN(self):
+        self.assertEqual(TakeN(self.l_even, 4), PlainListNew(2, 9, 11, 14))
+        self.assertEqual(TakeN(self.l_odd, 3), PlainListNew(1, 8, 6))
+        self.assertRaises(ValueError, lambda: TakeN(self.l_even, 10))
+        self.assertRaises(ValueError, lambda: TakeN(self.empty, 1))
+
+    def test_dropN(self):
+        self.assertEqual(DropN(self.l_odd, 4), PlainListNew(7))
+        self.assertEqual(DropN(self.l_even, 3), PlainListNew(14, 5, 18))
+        self.assertRaises(ValueError, lambda: DropN(self.l_even, 10))
+        self.assertRaises(ValueError, lambda: DropN(self.empty, 1))
+
 if __name__ == '__main__':
     unittest.main(verbosity=2)

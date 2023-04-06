@@ -27,3 +27,6 @@ class PlainList:
         
     def __str__(self) -> str:
         return str(self._list)
+    
+    def __repr__(self) -> str:
+        return str(self._list)
