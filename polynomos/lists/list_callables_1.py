@@ -1,3 +1,5 @@
+from typing import Callable
+
 from polynomos.base_callable import BaseCallable
 from polynomos.lists.plainlist import PlainList
 from polynomos.lists.list_callables_0 import ListLength, PlainListNew
@@ -8,7 +10,9 @@ __all__ = [
     "Last",
     "Middle",
     "TakeN",
-    "DropN"
+    "DropN",
+    "TakeList",
+    "TakeWhile"
 ]
 
 class ElementAt(BaseCallable):
@@ -58,3 +62,31 @@ class DropN(BaseCallable):
             raise ValueError(f"n must be lesser than or equal to \
                              the length of the list ({ListLength(l)})") 
         return PlainListNew(*l[n:])
+    
+class TakeList(BaseCallable):
+    @staticmethod
+    def eval(l: PlainList, take: PlainList, **kwargs):
+        i = 0
+        end_list = []
+
+        if sum(take._list) > ListLength(l):
+            raise ValueError(f"Cannot take elements with sequence: {take}")
+
+        for t in take:
+            end_list.append(PlainListNew(*l[i:i + t]))
+            i += t
+            
+        return PlainListNew(*end_list)
+    
+class TakeWhile(BaseCallable):
+    @staticmethod
+    def eval(l: PlainList, cond: Callable | BaseCallable, **kwargs):
+        final_list = []
+        i = 0
+        while i < ListLength(l):
+            if not cond(l[i]):
+                break
+            final_list.append(l[i])
+            i += 1
+
+        return PlainListNew(*final_list)    
