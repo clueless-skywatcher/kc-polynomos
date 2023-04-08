@@ -1,6 +1,11 @@
 from polynomos.integers.callables import GCD
 
 class Rational:
+    def __new__(cls, num, denom, auto_reduce = True):
+        if num == 0:
+            return 0
+        return super(Rational, cls).__new__(cls)
+    
     def __init__(self, num, denom, auto_reduce = True) -> None:
         if auto_reduce:
             gcd = GCD(abs(num), abs(denom))
@@ -13,6 +18,35 @@ class Rational:
         self.num = num
         self.denom = denom
         
+    def __le__(self, other):
+        if isinstance(other, Rational):
+            other = other.num / other.denom
+        
+        return self.num / self.denom > other
+    
+    def __le__(self, other):
+        if isinstance(other, Rational):
+            other = other.num / other.denom
+        
+        return self.num / self.denom <= other
+    
+    def __ge__(self, other):
+        if isinstance(other, Rational):
+            other = other.num / other.denom
+        
+        return self.num / self.denom >= other
+    
+    def __lt__(self, other):
+        if isinstance(other, Rational):
+            other = other.num / other.denom
+        
+        return self.num / self.denom < other
+    
+    def __gt__(self, other):
+        if isinstance(other, Rational):
+            other = other.num / other.denom
+        
+        return self.num / self.denom > other
 
     def __str__(self):
         return f"Rational({self.num}, {self.denom})"
@@ -39,6 +73,9 @@ class Rational:
         
         return other + self
     
+    def __sub__(self, other):
+        return self.__add__(-1 * other)
+
     def __neg__(self):
         if self.denom == 1:
             return self.num

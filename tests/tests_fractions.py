@@ -21,6 +21,10 @@ class TestFraction(unittest.TestCase):
         self.assertEqual(Fraction(10, 5, auto_reduce = True), 2)
         self.assertRaises(ZeroDivisionError, lambda: Fraction(10, 0))
         self.assertEqual(Fraction(0, 10), 0)
+        self.assertEqual(Fraction(Fraction(5, 8), 6), Fraction(5, 48))
+        self.assertEqual(Fraction(0.25, 6), Fraction(25, 600))
+        self.assertEqual(Fraction(0.25, 1), Fraction(1, 4))
+        self.assertEqual(Fraction(0.25, -1), Fraction(-1, 4))
 
     def test_add(self):
         self.assertEqual(Fraction(1, 2) + Fraction(2, 5), Fraction(9, 10))
