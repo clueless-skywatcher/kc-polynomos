@@ -53,4 +53,5 @@ class DecimalQ(BaseCallable):
 class NumQ(BaseCallable):
     @staticmethod
     def eval(a, **kwargs):
-        return isinstance(a, (int, float))
+        from polynomos.fractions.rational import Rational
+        return isinstance(a, (int, float, Rational))

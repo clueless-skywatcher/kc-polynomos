@@ -6,6 +6,7 @@ sys.path.insert(0, "../../kc-polynomos")
 sys.path.insert(0, "../kc-polynomos")
 
 from polynomos.integers.callables import *
+from polynomos.fractions.callables import Fraction
 
 class TestGCD(unittest.TestCase):
     def test_gcd(self):
@@ -44,11 +45,13 @@ class TestIntegerMembership(unittest.TestCase):
         self.assertEqual(DecimalQ(0.0), True)
         self.assertEqual(DecimalQ(25), False)
         self.assertEqual(DecimalQ(0.7), True)
+        self.assertEqual(DecimalQ(Fraction(10, 11)), False)
 
     def test_numq(self):
         self.assertEqual(NumQ(21), True)
         self.assertEqual(NumQ(2.11), True)
         self.assertEqual(NumQ("111"), False)
+        self.assertEqual(NumQ(Fraction(2, 5)), True)
 
 if __name__ == '__main__':
     unittest.main()
