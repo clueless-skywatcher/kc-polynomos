@@ -28,6 +28,43 @@ class TestListOperationsII(unittest.TestCase):
         self.assertEqual(Range(0, -10), PlainListNew())
         self.assertEqual(Range(0, -10, step = -1), PlainListNew(0, -1, -2, -3, -4, -5, -6, -7, -8, -9, -10))
         self.assertEqual(Range(1, 0, step = -1), PlainListNew(1, 0))
+    
+    def test_subdivide(self):
+        from polynomos.fractions.callables import Fraction
+        self.assertEqual(Subdivide(5), PlainListNew(
+            0, Fraction(1, 5), Fraction(2, 5), Fraction(3, 5), Fraction(4, 5), 1
+        ))
+        self.assertEqual(Subdivide(5, interval = 10), 
+                         PlainListNew(0, 2, 4, 6, 8, 10))
+        self.assertEqual(Subdivide(5, interval = Fraction(2, 3)), PlainListNew(
+            0, Fraction(2, 15), Fraction(4, 15), Fraction(6, 15), Fraction(8, 15), 
+            Fraction(10, 15)
+        ))
+        
+        self.assertEqual(Subdivide(5, interval = 5), PlainListNew(0, 1, 2, 3, 4, 5))
+        self.assertEqual(Subdivide(5, interval = 6), PlainListNew(
+            0, Fraction(6, 5), Fraction(12, 5), Fraction(18, 5), Fraction(24, 5), 6
+        ))
+        self.assertEqual(Subdivide(5, interval = 6, float_result = True), PlainListNew(
+            *[round(x, 3) for x in [0, 1.20, 2.40, 3.60, 4.80, 6.00]]
+        ))
+        
+        self.assertEqual(Subdivide(5, interval = Fraction(2, 3), float_result = True), PlainListNew(
+            *[round(x, 3) for x in [0., 0.133333, 0.266667, 0.4, 0.533333, 0.666667]]
+        ))
+
+        self.assertEqual(Subdivide(5, interval = (Fraction(2, 3), Fraction(3, 4))), PlainListNew(
+            Fraction(2, 3), Fraction(41, 60), Fraction(7, 10), Fraction(43, 60),
+            Fraction(11, 15), Fraction(3, 4)
+        ))
+        self.assertEqual(Subdivide(5, interval = (Fraction(2, 3), Fraction(3, 4)), float_result = True), PlainListNew(
+            *[round(x, 3) for x in [0.666667, 0.683333, 0.7, 0.716667, 0.733333, 0.75]]
+        ))
+
+        self.assertEqual(Subdivide(5, interval = 0), PlainListNew(0, 0, 0, 0, 0, 0))
+        self.assertEqual(Subdivide(5, interval = (1, 1)), PlainListNew(1, 1, 1, 1, 1, 1))
+
+        self.assertRaises(ValueError, lambda: Subdivide(5, interval=(1, 2, 3)))
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
