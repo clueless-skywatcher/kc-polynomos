@@ -1,3 +1,5 @@
+from polynomos.fractions.rational import Rational
+
 class PlainList:
     def __init__(self, *args, **kwargs) -> None:
         self._list = list(args)
@@ -8,7 +10,7 @@ class PlainList:
         return len(self._list)
 
     def __add__(self, other):
-        if isinstance(other, (int, float)):
+        if isinstance(other, (int, float, Rational)):
             return PlainList(*map(lambda x: x + other, self._list))
         elif isinstance(other, PlainList):
             if self.length == other.length:
