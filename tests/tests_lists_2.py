@@ -6,6 +6,7 @@ sys.path.insert(0, "../../kc-polynomos")
 sys.path.insert(0, "../kc-polynomos")
 
 from polynomos.integers.callables import EvenQ, OddQ
+from polynomos.fractions.callables import Fraction
 from polynomos.lists.list_callables_0 import PlainListNew
 from polynomos.lists.list_callables_2 import *
 
@@ -65,6 +66,19 @@ class TestListOperationsII(unittest.TestCase):
         self.assertEqual(Subdivide(5, interval = (1, 1)), PlainListNew(1, 1, 1, 1, 1, 1))
 
         self.assertRaises(ValueError, lambda: Subdivide(5, interval=(1, 2, 3)))
+
+    def test_prepend(self):
+        self.assertEqual(Prepend(self.l1, 5), PlainListNew(5, 1, 1, 2, 3, 1, 1, 5, 19))
+        self.assertEqual(Prepend(self.l1, Fraction(2, 5)), PlainListNew(Fraction(2, 5), 1, 1, 2, 3, 1, 1, 5, 19))
+
+    def test_append(self):
+        self.assertEqual(Append(self.l1, 5), PlainListNew(1, 1, 2, 3, 1, 1, 5, 19, 5))
+        self.assertEqual(Append(self.l1, Fraction(2, 5)), PlainListNew(1, 1, 2, 3, 1, 1, 5, 19, Fraction(2, 5)))
+
+    def test_insert(self):
+        self.assertEqual(Insert(self.l1, 4, 4), PlainListNew(1, 1, 2, 3, 4, 1, 1, 5, 19))
+        self.assertEqual(Insert(self.l1, Fraction(3, 4), 0), PlainListNew(Fraction(3, 4), 1, 1, 2, 3, 1, 1, 5, 19))
+        self.assertRaises(ValueError, lambda: Insert(self.l1, 5, 20))
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

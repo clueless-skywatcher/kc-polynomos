@@ -7,7 +7,10 @@ from polynomos.lists.list_callables_0 import ListLength
 __all__ = [
     "ListCount",
     "Range",
-    "Subdivide"
+    "Subdivide",
+    "Prepend",
+    "Append",
+    "Insert"
 ]
 
 class ListCount(BaseCallable):
@@ -55,3 +58,19 @@ class Subdivide(BaseCallable):
         if float_result:
             final_list = [NumericValue(x) for x in final_list]
         return PlainList(*final_list)
+
+class Prepend(BaseCallable):
+    @staticmethod
+    def eval(l: PlainList, e):
+        return l.prepend(e)
+    
+class Append(BaseCallable):
+    @staticmethod
+    def eval(l: PlainList, e):
+        return l.append(e)
+    
+class Insert(BaseCallable):
+    @staticmethod
+    def eval(l: PlainList, e, position: int):
+        return l.insert(e, position)
+    

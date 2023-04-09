@@ -19,6 +19,20 @@ class PlainList:
         else:
             raise TypeError("Lists can only be added to numbers and same-sized lists")
         
+    def prepend(self, e):
+        x = [e] + self._list
+        return PlainList(*x)
+    
+    def append(self, e):
+        x = self._list + [e]
+        return PlainList(*x)
+    
+    def insert(self, e, position: int):
+        if position >= len(self._list):
+            raise ValueError(f"Given position {position} is out of bounds")
+        x = self._list[:position] + [e] + self._list[position:]
+        return PlainList(*x)
+        
     def __eq__(self, other):
         if not isinstance(other, PlainList):
             raise TypeError
