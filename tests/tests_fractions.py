@@ -64,5 +64,8 @@ class TestFraction(unittest.TestCase):
         self.assertEqual(Fraction(11, 10) / 0.99, Fraction(10, 9))
         self.assertRaises(ZeroDivisionError, lambda: Fraction(10, 11) / 0)
 
+        self.assertEqual(1 / Fraction(2, 5), Fraction(5, 2))
+        self.assertEqual(3 / Fraction(10, 9), Fraction(27, 10))
+
 if __name__ == '__main__':
     unittest.main(verbosity=2)

@@ -1,5 +1,5 @@
 from polynomos.base_callable import BaseCallable
-
+from polynomos.lists.list_callables_0 import PlainListNew
 from polynomos.polynomials.poly import Polynomial
 
 __all__ = [
@@ -16,6 +16,10 @@ __all__ = [
 class PolynomialNew(BaseCallable):
     @staticmethod
     def eval(*coeffs, **kwargs):
+        if len(coeffs) == 1:
+            return coeffs[0]
+        elif len(coeffs) == 0:
+            return 0
         return Polynomial(*coeffs, **kwargs)
     
 class PolynomialAdd(BaseCallable):
@@ -27,8 +31,8 @@ class PolyCoefficientList(BaseCallable):
     @staticmethod
     def eval(p: Polynomial, symbol: str = 'x'):
         if p._symbol != symbol:
-            return []
-        return list(p._coeffs)
+            return PlainListNew()
+        return PlainListNew(*p._coeffs)
     
 class PolyLeadingCoefficient(BaseCallable):
     @staticmethod

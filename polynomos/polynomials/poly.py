@@ -1,9 +1,16 @@
+from polynomos.fractions.rational import Rational
+
 class Polynomial:
+    def __new__(cls, *coeffs, **kwargs):
+        if len(coeffs) == 0:
+            return 0
+        return super(Polynomial, cls).__new__(cls)
+
     def __init__(self, *coeffs, **kwargs) -> None:
         coeffs = list(self._remove_leading_zeros(coeffs))
 
         for i in range(len(coeffs)):
-            if int(coeffs[i]) == coeffs[i]:
+            if not isinstance(coeffs[i], Rational) and int(coeffs[i]) == coeffs[i]:
                 coeffs[i] = int(coeffs[i])
 
         self._coeffs = tuple(coeffs)
@@ -28,13 +35,13 @@ class Polynomial:
 
     @staticmethod
     def _is_polynomizable(x):
-        return isinstance(x, (int, float, Polynomial))
+        return isinstance(x, (int, float, Rational,Polynomial))
 
     def __add__(self, other):
         if not (Polynomial._is_polynomizable(other)):
             raise ValueError("Either of the two operands is not polynomizable")
         
-        if isinstance(other, (int, float)):
+        if isinstance(other, (int, float, Rational)):
             other = Polynomial(other)
         
         if self._symbol != other._symbol:
@@ -66,7 +73,7 @@ class Polynomial:
         if not (Polynomial._is_polynomizable(other)):
             raise ValueError("Either of the two operands is not polynomizable")
         
-        if isinstance(other, (int, float)):
+        if isinstance(other, (int, float, Rational)):
             other = Polynomial(other, symbol = self._symbol)
 
         if self._symbol != other._symbol:
@@ -92,7 +99,7 @@ class Polynomial:
     def __eq__(self, other):
         if not Polynomial._is_polynomizable(other):
             return False
-        if isinstance(other, (int, float)):
+        if isinstance(other, (int, float, Rational)):
             other = Polynomial(other)
         return self._coeffs == other._coeffs and self._symbol == other._symbol
     
@@ -100,7 +107,7 @@ class Polynomial:
         if not (Polynomial._is_polynomizable(other)):
             raise ValueError("Either of the two operands is not polynomizable")
         
-        if isinstance(other, (int, float)):
+        if isinstance(other, (int, float, Rational)):
             other = Polynomial(other, symbol = symbol)
 
         if symbol != other._symbol:
@@ -108,7 +115,8 @@ class Polynomial:
         
         coeffs1 = self._coeffs
         coeffs2 = other._coeffs
-
+        # import pdb
+        # pdb.set_trace()
         quotient_coeffs = []
 
         n = len(coeffs1)
@@ -124,7 +132,7 @@ class Polynomial:
 
             if coef != 0:
                 for j in range(1, m):
-                    quotient_coeffs[i + j] += -coeffs2[j] * coef
+                    quotient_coeffs[i + j] += -1 * coeffs2[j] * coef
 
         separator = -(m - 1)
 
@@ -173,6 +181,11 @@ class Polynomial:
         for i in range(len_coeffs):
             if self._coeffs[i] == 0:
                 continue
+            elif isinstance(self._coeffs[i], Rational):
+                if self._coeffs[i] >= 0:
+                    monomial_str += f" + ({self._coeffs[i].num}/{self._coeffs[i].denom}){self._monomial_represent(len_coeffs - i - 1)}"
+                else:
+                    monomial_str += f" - ({abs(self._coeffs[i].num)}/{abs(self._coeffs[i].denom)}){self._monomial_represent(len_coeffs - i - 1)}"
             elif self._coeffs[i] == 1 and i != len(self._coeffs) - 1:
                 monomial_str += f" + {self._monomial_represent(len_coeffs - i - 1)}"
             elif self._coeffs[i] == -1 and i != len(self._coeffs) - 1:
