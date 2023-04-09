@@ -121,5 +121,8 @@ class Rational:
             other = Rational.rationalize(other)
         return self.__mul__(other.inverse())
     
+    def __rtruediv__(self, other):
+        return other * self.inverse()
+    
     def __rmul__(self, other):
         return self.__mul__(other)
