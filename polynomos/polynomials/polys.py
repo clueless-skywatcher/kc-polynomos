@@ -3,6 +3,16 @@ from polynomos.polynomials.monomials import Monomial
 
 class Polynomial:
     def __init__(self, monomials: list[Monomial], coeffs: list) -> None:
+        i = 0
+        while i < len(coeffs):
+            if coeffs[i] == 0:
+                i += 1
+            else:
+                break
+
+        monomials = monomials[i:]
+        coeffs = coeffs[i:]
+
         if not len(monomials) == len(coeffs):
             raise ValueError("Monomial list should be same as number of coefficients")
         self.coeffs = coeffs
@@ -105,14 +115,12 @@ class Polynomial:
         return self + other
 
     def __mul__(self, other):
-        # import pdb
-        # pdb.set_trace()
         if Polynomial.is_zero(other):
             return 0
         
         if NumQ(other):
             if other == 0:
-                return self
+                return 0
             new_monomial = {symbol: 0 for symbol in self.symbols}
             other = Polynomial([Monomial(new_monomial)], [other])
 
@@ -137,7 +145,21 @@ class Polynomial:
             c2 = poly2.coeffs[l2 // 2:]
 
             return poly1 * Polynomial(h1, c1) + poly1 * Polynomial(h2, c2)
+
+    def __eq__(self, other) -> bool:        
+        if not isinstance(other, Polynomial):
+            return False
+        if not (
+            len(self.monomials) == len(other.monomials) and 
+            len(self.coeffs) == len(other.coeffs)
+        ):
+            return False
         
+        return self.monomials == other.monomials and self.coeffs == other.coeffs 
+
+    def __neq__(self, other):
+        return not self.__eq__(other)
+
     def __rmul__(self, other):
         return self.__mul__(other)
 

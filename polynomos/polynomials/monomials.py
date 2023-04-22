@@ -1,12 +1,6 @@
 from polynomos.polynomials.ring import PolynomialRing
 
 class Monomial:
-    def __new__(cls, power_dict: dict):
-        if all([value == 0 for key, value in power_dict.items()]):
-            return 1
-        else:
-            return super(Monomial, cls).__new__(cls)
-
     def __init__(self, power_map: dict) -> None:
         self.power_map = power_map
         self.symbols = sorted(power_map.keys())

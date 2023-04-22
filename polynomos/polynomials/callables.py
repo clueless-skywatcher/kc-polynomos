@@ -1,59 +1,46 @@
 from polynomos.base_callable import BaseCallable
-from polynomos.lists.list_callables_0 import PlainListNew
+from polynomos.lists.plainlist import PlainList
 from polynomos.polynomials.polys import Polynomial
+from polynomos.polynomials.monomials import Monomial
 
-# __all__ = [
-#     "PolynomialNew",
-#     "PolynomialAdd",
-#     "PolyCoefficientList",
-#     "PolyLeadingCoefficient",
-#     "PolynomialDegree",
-#     "PolynomialQuotient",
-#     "PolynomialRemainder",
-#     "PolynomialQuotientRemainder"
-# ]
-
-class PolynomialNew(BaseCallable):
+class UnivariatePoly(BaseCallable):
     @staticmethod
-    def eval(*coeffs, **kwargs):
-        pass
-    
-# class PolynomialAdd(BaseCallable):
-#     @staticmethod
-#     def eval(p1, p2):
-#         return p1 + p2
-    
-# class PolyCoefficientList(BaseCallable):
-#     @staticmethod
-#     def eval(p: Polynomial, symbol: str = 'x'):
-#         if p._symbol != symbol:
-#             return PlainListNew()
-#         return PlainListNew(*p._coeffs)
-    
-# class PolyLeadingCoefficient(BaseCallable):
-#     @staticmethod
-#     def eval(p: Polynomial, symbol: str = 'x'):
-#         return p._lc(symbol)
+    def eval(coeffs: PlainList, symbol: str = 'x', **kwargs):
+        coeffs = coeffs._list
+        i = 0
+        while i < len(coeffs):
+            if coeffs[i] == 0:
+                i += 1
+            else:
+                break
 
-# class PolynomialDegree(BaseCallable):
-#     @staticmethod
-#     def eval(p: Polynomial | int | float, symbol: str = 'x'):
-#         if isinstance(p, (int, float)):
-#             return 0
-#         return p._degree(symbol)
+        coeffs = coeffs[i:]
+        
+        monomials = []
+        for i, _ in enumerate(coeffs):
+            monomials.append(Monomial({symbol: i}))
+
+        return Polynomial(monomials, coeffs)
     
-# class PolynomialQuotient(BaseCallable):
-#     @staticmethod
-#     def eval(p: Polynomial, q: Polynomial, symbol: str = 'x'):
-#         return p.quot_rem(q, symbol=symbol)[0]
+class Var(BaseCallable):
+    @staticmethod
+    def eval(symbol: str, **kwargs):
+        return Polynomial([Monomial({symbol: 1})], [1])
     
-# class PolynomialRemainder(BaseCallable):
-#     @staticmethod
-#     def eval(p: Polynomial, q: Polynomial, symbol: str = 'x'):
-#         return p.quot_rem(q, symbol=symbol)[1]
+class Vars(BaseCallable):
+    @staticmethod
+    def eval(symbols: str, delimiter: str = ' ', **kwargs):
+        symbols_list = symbols.split(delimiter)
+        return map(Var, symbols_list)
     
-# class PolynomialQuotientRemainder(BaseCallable):
-#     @staticmethod
-#     def eval(p: Polynomial, q: Polynomial, symbol: str = 'x'):
-#         result = p.quot_rem(q, symbol=symbol)
-#         return result
+class MultiPoly(BaseCallable):
+    @staticmethod
+    def eval(coeff_dict, **kwargs):
+        monomials = []
+        coeffs = []
+
+        for monomial, coeff in coeff_dict.items():
+            monomials.append(Monomial(monomial))
+            coeffs.append(coeff)
+
+        return Polynomial(monomials, coeffs)
