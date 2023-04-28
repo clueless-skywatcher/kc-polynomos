@@ -5,114 +5,106 @@ import sys
 sys.path.insert(0, "../../kc-polynomos")
 sys.path.insert(0, "../kc-polynomos")
 
-from polynomos.polynomials.poly import Polynomial
-from polynomos.polynomials.callables import *
-from polynomos.fractions.callables import Fraction
-from polynomos.lists.list_callables_0 import PlainListNew
+from polynomos.all import *
+from polynomos.polynomials.polys import Polynomial
 
-class TestPolynomialAddition(unittest.TestCase):
-    p1 = PolynomialNew(1, 0, 2, 3, 4)
-    p2 = PolynomialNew(9, -3, 2, 3, 1, 1, -2)
-    p3 = PolynomialNew(1, 0, 2, 3, 4, symbol = 'y')
-    p4 = PolynomialNew(Fraction(-1, 4), Fraction(2, 5), 2, 3)
-    p5 = PolynomialNew(1, Fraction(2, 5), 2, 3)
-    
-    integer = PolynomialNew(1)
+class TestUnivariatePolynomials(unittest.TestCase):
+    uni_x_1 = UnivariatePoly(PlainListNew(0, 0, 1, 1))
+    uni_x_2 = UnivariatePoly(PlainListNew(1, 2, 4, 10))
+
+    def test_univariate(self):
+        self.assertIsInstance(self.uni_x_1, Polynomial)
+        self.assertIsInstance(self.uni_x_2, Polynomial)
+        self.assertEqual(self.uni_x_1, UnivariatePoly(PlainListNew(0, 0, 1, 1, 0, 0)))
+        self.assertNotEqual(self.uni_x_1, UnivariatePoly(PlainListNew(0, 0, 1, 1, 0, 1)))
         
+    def test_uni_add(self):
+        self.assertEqual(self.uni_x_1 + self.uni_x_2, UnivariatePoly(PlainListNew(1, 2, 5, 11)))
+        self.assertEqual(self.uni_x_1 + 0, self.uni_x_1)
+        self.assertEqual(self.uni_x_1 + self.uni_x_2, self.uni_x_2 + self.uni_x_1)
+        self.assertEqual(self.uni_x_1 + self.uni_x_1, 2 * self.uni_x_1)
+
+    def test_uni_sub(self):
+        self.assertEqual(self.uni_x_1 - self.uni_x_2, UnivariatePoly(PlainListNew(-1, -2, -3, -9)))
+        self.assertEqual(self.uni_x_1 - 0, self.uni_x_1)
+        self.assertEqual(self.uni_x_1 + self.uni_x_2, self.uni_x_2 + self.uni_x_1)
+        self.assertEqual(self.uni_x_1 - self.uni_x_1, 0)
+        self.assertEqual(self.uni_x_1 - self.uni_x_1 + self.uni_x_2, self.uni_x_2)
+        self.assertEqual(self.uni_x_1 + self.uni_x_1 - self.uni_x_1 + 4 * self.uni_x_1, 5 * self.uni_x_1)
+
+    def test_uni_mul(self):
+        self.assertEqual(self.uni_x_1 * 0, 0)
+        self.assertEqual(self.uni_x_1 * self.uni_x_2, UnivariatePoly(PlainListNew(0, 0, 1, 3, 6, 14, 10)))
+        self.assertEqual(self.uni_x_1 * self.uni_x_2, self.uni_x_2 * self.uni_x_1)
+        self.assertEqual(self.uni_x_1 * -self.uni_x_2, UnivariatePoly(PlainListNew(0, 0, -1, -3, -6, -14, -10)))
+
+class TestMultivariatePolynomials(unittest.TestCase):
+    mul_x_1 = MultiPoly({
+        tuple({'x': 1, 'y': 2, 'z': 0}.items()): 1,
+        tuple({'x': 1, 'w': 1, 'z': 1}.items()): 2,
+        tuple({'y': 1, 'z': 1}.items()): -5,
+        tuple({'x': 0}.items()): 11
+    })
+    mul_x_2 = MultiPoly({
+        tuple({'x': 1, 'y': 0, 'z': 1}.items()): 1,
+        tuple({'x': 0, 'w': 0, 'z': 0}.items()): 2,
+        tuple({'y': 1, 'z': 1}.items()): -1,
+        tuple({'x': 5, 'y': 0, 'z': 0}.items()): -7
+    })
+    mul_x_3 = MultiPoly({
+        tuple({'x': 3, 'y': 2, 'z': 2}.items()): 10,
+        tuple({'x': 0, 'w': 1, 'z': 1}.items()): 2,
+        tuple({'y': 8}.items()): -5,
+        tuple({'x': 0, 'y': 0, 'z': 0}.items()): 8
+    })
+
     def test_init(self):
-        self.assertIsInstance(self.p1, Polynomial)
-        self.assertIsInstance(self.p2, Polynomial)
-        self.assertEqual(PolyCoefficientList(self.p1, 'x'), PolyCoefficientList(PolynomialNew(0, 0, 1, 0, 2, 3, 4), 'x'))
-        self.assertEqual(str(self.p1), str(PolynomialNew(0, 0, 1, 0, 2, 3, 4)))
+        print(self.mul_x_1)
+        print(self.mul_x_2)
+        print(self.mul_x_3)
+        self.assertIsInstance(self.mul_x_1, Polynomial)
+        self.assertIsInstance(self.mul_x_2, Polynomial)
+        self.assertIsInstance(self.mul_x_3, Polynomial)
 
-    def test_repr(self):
-        self.assertEqual(str(self.p1), "x^4 + 2x^2 + 3x + 4")
-        self.assertEqual(str(self.p2), "9x^6 - 3x^5 + 2x^4 + 3x^3 + x^2 + x - 2")
-        self.assertEqual(str(self.p3), "y^4 + 2y^2 + 3y + 4")
-        self.assertEqual(str(self.p4), "-(1/4)x^3 + (2/5)x^2 + 2x + 3")
-        self.assertEqual(str(self.p5), "x^3 + (2/5)x^2 + 2x + 3")
-
+class TestSymbols(unittest.TestCase):
+    vars_ = Vars('x y z', delimiter = ' ')
+    
+    def test_vars(self):
+        x, y, z = self.vars_
+        
+        self.assertEqual(x, Var('x'))
+        self.assertEqual(y, Var('y'))
+        self.assertEqual(z, Var('z'))
+        self.assertNotEqual(y, x)
+        
     def test_add(self):
-        self.assertIsInstance(self.p1 + self.p2, Polynomial)
-        self.assertEqual(PolyCoefficientList(self.p1 + self.p2, 'x'), PlainListNew(9, -3, 3, 3, 3, 4, 2))
-        self.assertEqual(PolyCoefficientList(self.p1 + self.p4, 'x'), PlainListNew(1, Fraction(-1, 4), Fraction(12, 5), 5, 7))
+        x, y, z = self.vars_
+        
+        self.assertEqual(x + y, y + x)
+        self.assertEqual(x + x, 2 * x)
+        self.assertEqual(x + x + 9 * x, 11 * x)
+        self.assertEqual(y - y + 9 * y, 9 * y)
+        self.assertEqual(y - y, 0)
+        self.assertEqual(x + 0, x)
+        self.assertEqual(x + y - (x + y), 0)
+        self.assertEqual(x + y - (x - y), 2 * y)
+        self.assertEqual(x + y + z + y + 5 * x + 6 * z, 6 * x + 2 * y + 7 * z)
 
-        self.assertEqual(str(self.p1 + self.p2), "9x^6 - 3x^5 + 3x^4 + 3x^3 + 3x^2 + 4x + 2")
-        self.assertEqual(str(self.p1 + self.p4), "x^4 - (1/4)x^3 + (12/5)x^2 + 5x + 7")
+    def test_mul(self):
+        x, y, z = self.vars_
+        
+        self.assertEqual(x * y, y * x)
+        self.assertEqual(x * x, UnivariatePoly(PlainListNew(0, 0, 1)))
+        self.assertEqual(x * x * 2, UnivariatePoly(PlainListNew(0, 0, 2)))
+        self.assertEqual(x * x * x, UnivariatePoly(PlainListNew(0, 0, 0, 1)))
+        self.assertEqual(2 * x * y, MultiPoly({
+            (('x', 1), ('y', 1)): 2
+        }))
+        self.assertEqual(2 * x * y * y * 5 + 8 * x * z, MultiPoly({
+            (('x', 1), ('y', 2)): 10,
+            (('x', 1), ('z', 1)): 8
+        }))
 
-        self.assertRaises(ValueError, lambda: self.p1 + "ABC")
-        self.assertRaises(ValueError, lambda: self.p1 + self.p3)
-
-    def test_neg(self):
-        self.assertEqual(PolyCoefficientList(-self.p1), PlainListNew(-1, 0, -2, -3, -4))
-        self.assertEqual(str(-self.p1), "-x^4 - 2x^2 - 3x - 4")
-
-    def test_sub(self):
-        self.assertIsInstance(self.p1 - self.p2, Polynomial)
-        self.assertEqual(PolyCoefficientList(self.p1 - self.p2), PlainListNew(-9, 3, -1, -3, 1, 2, 6))
-        self.assertEqual(str(self.p1 - self.p2), "-9x^6 + 3x^5 - x^4 - 3x^3 + x^2 + 2x + 6")
-        self.assertRaises(Exception, lambda: self.p1 - "ABC")
-
-    def test_eq(self):
-        self.assertEqual(self.p1, PolynomialNew(1, 0, 2, 3, 4))
-        self.assertNotEqual(self.p1, PolynomialNew(1))
-        self.assertEqual(self.integer, PolynomialNew(1))
-        self.assertEqual(PolynomialNew(0), 0)
-        self.assertNotEqual(self.p1, PolynomialNew(1, 0, 2, 3, 4, symbol = 'y'))
-
-class TestPolynomialDivision(unittest.TestCase):
-    a = PolynomialNew(3, 2, 0, 1, 5)
-    b = PolynomialNew(1, 2, 3)
-    
-    p1 = PolynomialNew(1, 0, 2, 3, 4)
-    p2 = PolynomialNew(Fraction(-1, 4), Fraction(2, 5), 2, 3)
-    
-
-    def test_div(self):
-        self.assertEqual(PolynomialQuotient(self.a, self.b), PolynomialNew(3, -4, -1))
-        self.assertEqual(PolynomialRemainder(self.a, self.b), PolynomialNew(15, 8))
-        self.assertEqual(PolynomialQuotientRemainder(self.a, self.b), (PolynomialNew(3, -4, -1), PolynomialNew(15, 8)))
-        self.assertEqual(PolynomialQuotientRemainder(self.p1, self.p2, 'x'), (
-            PolynomialNew(-4, Fraction(-32, 5)), 
-            PolynomialNew(Fraction(314, 25), Fraction(139, 5), Fraction(116, 5))
-        ))
-        self.assertEqual(PolynomialQuotientRemainder(self.p2, self.p1, 'x'), (
-            PolynomialNew(0),
-            PolynomialNew(Fraction(-1, 4), Fraction(2, 5), 2, 3)
-        ))
-        self.assertEqual(PolynomialQuotientRemainder(
-            PolynomialNew(1, 0, 0, 2, 1),
-            PolynomialNew(1, 0, 1),
-            'x'
-        ), (
-            PolynomialNew(1, 0, -1),
-            PolynomialNew(2, 2)
-        ))
-
-class TestPolynomialFunctions(unittest.TestCase):
-    p1 = PolynomialNew(1, 0, 2, 3, 4)
-    p2 = PolynomialNew(9, -3, 2, 3, 1, 1, -2)
-    p3 = PolynomialNew(1, 0, 2, 3, 4, symbol = 'y')
-
-    def test_degree(self):
-        self.assertEqual(PolynomialDegree(self.p1, 'x'), 4)
-        self.assertEqual(PolynomialDegree(self.p2, 'x'), 6)
-        self.assertEqual(PolynomialDegree(self.p3, 'y'), 4)
-        self.assertEqual(PolynomialDegree(self.p1, 'y'), 0)
-        self.assertEqual(PolynomialDegree(self.p3, 'x'), 0)
-        self.assertEqual(PolynomialDegree(1, 'x'), 0),
-        self.assertEqual(PolynomialDegree(8.25, 'x'), 0)
-
-    def test_lc(self):
-        self.assertEqual(PolyLeadingCoefficient(self.p1, 'x'), 1)
-        self.assertEqual(PolyLeadingCoefficient(self.p2, 'x'), 9)
-        self.assertEqual(PolyLeadingCoefficient(self.p1, 'y'), 0)
-        self.assertEqual(PolyLeadingCoefficient(PolynomialNew(0, 0, 2, 2, 3, 8, 6), 'x'), 2)
-
-    def test_coeff_list(self):
-        self.assertEqual(PolyCoefficientList(self.p1, 'x'), PlainListNew(1, 0, 2, 3, 4))
-        self.assertEqual(PolyCoefficientList(PolynomialNew(0, 0, 2, 2, 3, 8, 6), 'x'), PlainListNew(2, 2, 3, 8, 6))
-        self.assertEqual(PolyCoefficientList(self.p1, 'y'), PlainListNew())
-    
 if __name__ == '__main__':
     unittest.main()
+
