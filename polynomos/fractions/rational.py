@@ -49,10 +49,10 @@ class Rational:
         return self.num / self.denom > other
 
     def __str__(self):
-        return f"Rational({self.num}, {self.denom})"
+        return f"({self.num}/{self.denom})"
     
     def __repr__(self):
-        return f"Rational({self.num}, {self.denom})"
+        return f"({self.num}/{self.denom})"
 
     @staticmethod
     def rationalize(x: float, auto_reduce = True):

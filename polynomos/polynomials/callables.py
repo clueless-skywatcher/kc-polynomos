@@ -3,18 +3,18 @@ from polynomos.lists.plainlist import PlainList
 from polynomos.polynomials.polys import Polynomial
 from polynomos.polynomials.monomials import Monomial
 
+__all__ = [
+    'UnivariatePoly',
+    'Var',
+    'Vars',
+    'MultiPoly'
+]
+
 class UnivariatePoly(BaseCallable):
     @staticmethod
     def eval(coeffs: PlainList, symbol: str = 'x', **kwargs):
         coeffs = coeffs._list
         i = 0
-        while i < len(coeffs):
-            if coeffs[i] == 0:
-                i += 1
-            else:
-                break
-
-        coeffs = coeffs[i:]
         
         monomials = []
         for i, _ in enumerate(coeffs):
@@ -28,10 +28,13 @@ class Var(BaseCallable):
         return Polynomial([Monomial({symbol: 1})], [1])
     
 class Vars(BaseCallable):
+    def __new__(cls, symbols: str, delimiter: str = ' ', **kwargs) -> None:
+        return cls.eval(symbols, delimiter=delimiter, **kwargs)
+
     @staticmethod
     def eval(symbols: str, delimiter: str = ' ', **kwargs):
         symbols_list = symbols.split(delimiter)
-        return map(Var, symbols_list)
+        return tuple(map(Var, symbols_list))
     
 class MultiPoly(BaseCallable):
     @staticmethod
@@ -40,6 +43,7 @@ class MultiPoly(BaseCallable):
         coeffs = []
 
         for monomial, coeff in coeff_dict.items():
+            monomial = {key: value for key, value in monomial}
             monomials.append(Monomial(monomial))
             coeffs.append(coeff)
 

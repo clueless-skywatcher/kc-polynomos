@@ -70,3 +70,10 @@ class Monomial:
     
     def __rmul__(self, other):
         return self.__mul__(other)
+    
+    def __pow__(self, other):
+        new_map = {}
+        for symbol in self.power_map:
+            new_map[symbol] = self.power_map[symbol] * other
+
+        return Monomial(new_map)
