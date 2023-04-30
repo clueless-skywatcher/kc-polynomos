@@ -33,6 +33,9 @@ class PlainList:
         x = self._list[:position] + [e] + self._list[position:]
         return PlainList(*x)
         
+    def __list__(self):
+        return self._list
+
     def __eq__(self, other):
         if not isinstance(other, PlainList):
             raise TypeError
