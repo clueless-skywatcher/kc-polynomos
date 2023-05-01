@@ -1,4 +1,4 @@
-from polynomos.integers.callables import GCD
+from polynomos.integers.callables_1 import GCD
 
 class Rational:
     def __new__(cls, num, denom, auto_reduce = True):

@@ -4,7 +4,7 @@ import sys
 sys.path.insert(0, "../../kc-polynomos")
 sys.path.insert(0, "../kc-polynomos")
 
-from polynomos.integers.callables import EvenQ, OddQ
+from polynomos.integers.callables_1 import EvenQ, OddQ
 from polynomos.lists.list_callables_0 import PlainListNew
 from polynomos.lists.list_callables_1 import *
 
