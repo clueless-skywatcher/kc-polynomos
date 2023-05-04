@@ -5,7 +5,7 @@ import sys
 sys.path.insert(0, "../../kc-polynomos")
 sys.path.insert(0, "../kc-polynomos")
 
-from polynomos.integers.callables import *
+from polynomos.integers.callables_1 import *
 from polynomos.fractions.callables import Fraction
 
 class TestGCD(unittest.TestCase):

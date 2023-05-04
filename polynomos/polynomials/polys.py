@@ -1,5 +1,5 @@
 from polynomos.fractions.rational import Rational
-from polynomos.integers.callables import IntQ, NumQ
+from polynomos.integers.callables_1 import IntQ, NumQ
 from polynomos.polynomials.monomials import Monomial
 
 class Polynomial:

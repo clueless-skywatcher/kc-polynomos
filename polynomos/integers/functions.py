@@ -23,3 +23,41 @@ def gcd(a: int, b: int):
     
     return gcd(b, a % b)
 
+def partition_integer(n: int):
+    try:
+        if n <= 0:
+            return PlainList(PlainList())
+        end_list = PlainList()
+        current_partition = PlainList(*([0] * n))
+    except NameError:
+        from polynomos.lists.plainlist import PlainList
+        if n <= 0:
+            return PlainList(PlainList())
+        end_list = PlainList()
+        current_partition = PlainList(*([0] * n))
+
+    k = 0
+    current_partition[k] = n
+    
+    while True:
+        end_list = end_list.append(PlainList(*[x for x in current_partition._list[:k + 1] if x > 0]))
+        
+        remainder = 0
+
+        while k >= 0 and current_partition[k] == 1:
+            remainder += current_partition[k]
+            k -= 1
+
+        if k < 0:
+            return end_list
+        
+        current_partition[k] -= 1
+        remainder += 1
+        
+        while remainder > current_partition[k]:
+            current_partition[k + 1] = current_partition[k]
+            remainder -= current_partition[k]
+            k += 1
+
+        current_partition[k + 1] = remainder
+        k += 1
