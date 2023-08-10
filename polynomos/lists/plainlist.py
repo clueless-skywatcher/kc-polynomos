@@ -65,3 +65,6 @@ class PlainList:
     
     def __repr__(self) -> str:
         return str(self._list)
+    
+    def reverse(self):
+        return PlainList(*self._list[::-1])

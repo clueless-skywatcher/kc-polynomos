@@ -1,5 +1,3 @@
-from polynomos.polynomials.ring import PolynomialRing
-
 class Monomial:
     def __init__(self, power_map: dict) -> None:
         self.power_map = power_map

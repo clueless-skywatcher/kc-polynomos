@@ -1,9 +1,15 @@
 from polynomos.base_callable import BaseCallable
-from polynomos.combinomos.tableaux.funcs import ferrers_diagram
+from polynomos.combinomos.tableaux.funcs import (
+    ferrers_diagram,
+    partition_transpose,
+    durfee_square
+)
 from polynomos.lists.plainlist import PlainList
 
 __all__ = [
-    'FerrersDiagram'
+    'FerrersDiagram',
+    'TransposePartition',
+    'DurfeeSquare'
 ]
 
 class FerrersDiagram(BaseCallable):
@@ -18,3 +24,13 @@ class FerrersDiagram(BaseCallable):
         diagram = ferrers_diagram(l, notation, character)
         print(diagram)
         return diagram
+    
+class TransposePartition(BaseCallable):
+    @staticmethod
+    def eval(l: PlainList, *args, **kwargs):
+        return partition_transpose(l)
+    
+class DurfeeSquare(BaseCallable):
+    @staticmethod
+    def eval(l: PlainList, *args, **kwargs):
+        return durfee_square(l)

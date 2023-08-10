@@ -59,9 +59,6 @@ class TestMultivariatePolynomials(unittest.TestCase):
     })
 
     def test_init(self):
-        print(self.mul_x_1)
-        print(self.mul_x_2)
-        print(self.mul_x_3)
         self.assertIsInstance(self.mul_x_1, Polynomial)
         self.assertIsInstance(self.mul_x_2, Polynomial)
         self.assertIsInstance(self.mul_x_3, Polynomial)

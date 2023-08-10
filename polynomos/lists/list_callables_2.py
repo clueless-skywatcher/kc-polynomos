@@ -74,3 +74,7 @@ class Insert(BaseCallable):
     def eval(l: PlainList, e, position: int):
         return l.insert(e, position)
     
+class Reverse(BaseCallable):
+    @staticmethod
+    def eval(l: PlainList, *args, **kwargs):
+        return l.reverse()
