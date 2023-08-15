@@ -54,7 +54,7 @@ class GraphEdge:
         return hash(tuple(sorted([self.v1, self.v2])))
 
 class SimpleGraphObject:
-    def __init__(self, vertices: List, edges: List) -> None:
+    def __init__(self, vertices: List, edges: List, **properties) -> None:
         if all([isinstance(x, (int, str)) for x in vertices]):
             self._vertices = set([GraphVertex(x) for x in vertices])
         else:
@@ -66,6 +66,13 @@ class SimpleGraphObject:
         
         self._construct_label_map()
         self._construct_adj_matrix()
+        self._properties = properties
+
+    def set_property(self, **properties):
+        self._properties = properties
+
+    def get_property(self, property):
+        return self._properties.get(property, None)
 
     def _construct_label_map(self):
         self.label_map = {vertex.label: i + 1 for i, vertex in enumerate(sorted(list(self._vertices)))}
