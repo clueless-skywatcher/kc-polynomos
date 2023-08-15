@@ -11,9 +11,10 @@ from polynomos.graphnomos.graph import SimpleGraphObject
 def fruchterman_reingold_layout(g: SimpleGraphObject, 
     iterations = 50, 
     seed = None,
+    optimal_distance = None
 ):
     def cool(temp, iterations):
-        return temp * (1 - iterations / iterations_total)
+        return temp * 0.975
 
     if seed is not None:
         random.seed(seed)
@@ -24,7 +25,8 @@ def fruchterman_reingold_layout(g: SimpleGraphObject,
     # Parameters
     width = 1.0
     height = 1.0
-    optimal_distance = math.sqrt(width * height / len(g.get_vertices()))
+    if optimal_distance is None:
+        optimal_distance = math.sqrt(width * height / len(g.get_vertices()))
     iterations_total = iterations
     temperature = width / 10.0
 
@@ -73,8 +75,8 @@ def fruchterman_reingold_layout(g: SimpleGraphObject,
 
             # Update positions
             x, y = positions[vertex]
-            x = min(width / 2, max(-width / 2, x + displacement_x))
-            y = min(height / 2, max(-height / 2, y + displacement_y))
+            x = min(width, max(-width, x + displacement_x))
+            y = min(height, max(-height, y + displacement_y))
             positions[vertex] = (x, y)
 
         # Cool down temperature
