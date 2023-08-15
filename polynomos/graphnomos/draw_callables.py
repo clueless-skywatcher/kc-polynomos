@@ -1,10 +1,13 @@
+import random
+
 from polynomos.base_callable import BaseCallable
-from polynomos.graphnomos.draw import fruchterman_reingold_layout, fruchterman_reingold_plot
-from polynomos.graphnomos.graph import SimpleGraphObject
+from polynomos.graphnomos.draw import draw_graph, fruchterman_reingold_layout, bipartite_layout
+from polynomos.graphnomos.graph import GraphVertex, SimpleGraphObject
 
 __all__ = [
+    "DrawGraph",
+    "BipartiteLayout",
     "FruchtermanReingoldLayout",
-    "DrawGraph"
 ]
 
 class FruchtermanReingoldLayout(BaseCallable):
@@ -13,5 +16,8 @@ class FruchtermanReingoldLayout(BaseCallable):
 
 class DrawGraph(BaseCallable):
     def eval(g, pos = None, layout = 'fruchterman_reingold'):
-        if layout == 'fruchterman_reingold':
-            fruchterman_reingold_plot(g)
+        draw_graph(g, points=pos, algorithm=layout)
+
+class BipartiteLayout(BaseCallable):
+    def eval(g: SimpleGraphObject, first_partition = None):
+        return bipartite_layout(g, first_partition)

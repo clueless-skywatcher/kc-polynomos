@@ -6,7 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as pch
 
-from polynomos.graphnomos.graph import SimpleGraphObject
+from polynomos.graphnomos.graph import GraphVertex, SimpleGraphObject
 
 def fruchterman_reingold_layout(g: SimpleGraphObject, 
     iterations = 50, 
@@ -84,8 +84,14 @@ def fruchterman_reingold_layout(g: SimpleGraphObject,
 
     return positions
 
-def fruchterman_reingold_plot(g: SimpleGraphObject):
-    points = fruchterman_reingold_layout(g)
+def draw_graph(g: SimpleGraphObject, points = None, algorithm = "fruchterman_reingold"):
+    if points is None:
+        if algorithm == "fruchterman_reingold":
+            points = fruchterman_reingold_layout(g)
+        elif algorithm == "bipartite":
+            points = bipartite_layout(g)
+        else:
+            raise ValueError("Either provide an algorithm or a dict of points for the graph")
     # Draw edges
     for edge in g.get_edges():
         x1, y1 = points[edge.v1]
@@ -99,4 +105,78 @@ def fruchterman_reingold_plot(g: SimpleGraphObject):
     
     plt.axis('off')
     plt.show()
+
+def bipartite_layout(g: SimpleGraphObject, first_partition: list = None):
+    def rescale(positions):
+        limit = 0
+        y_max = -1
+        x_max = -1
+
+        len_pos = len(positions)
+
+        x_mean = 0
+        y_mean = 0
+
+        for pos in positions:
+            if positions[pos][0] > x_max:
+                x_max = positions[pos][0]
+            if positions[pos][1] > y_max:
+                y_max = positions[pos][1]
+
+            x_mean += positions[pos][0] / len_pos
+            y_mean += positions[pos][1] / len_pos
+
+            limit = max(limit, x_max, y_max)
+
+        for pos in positions:
+            positions[pos][0] -= x_mean
+            positions[pos][1] -= y_mean
+        import pdb
+        pdb.set_trace()
+        if limit > 0:
+            for pos in positions:
+                positions[pos][0] *= 1 / limit
+                positions[pos][1] *= 1 / limit
+
+        return positions
+
+    if first_partition is None:
+        if g.get_property("bipartite_parties") is not None:
+            first_partition = [GraphVertex(v) for v in g.get_property("bipartite_parties")[0]]
+        else:
+            first_partition = [GraphVertex(v) for v in range(1, random.randint(2, len(g.get_vertices())))]
+
+    height = 1
+    width = 4 / 3
+    offset = (width / 2, height / 2)
+
+    first_partition = set(first_partition)
+    second_partition = g.get_vertices() - first_partition
+
+    first_part_points = {
+        vertex: [0, i * height] for i, vertex in enumerate(first_partition)
+    }
+
+    second_part_points = {
+        vertex: [width, i * height] for i, vertex in enumerate(second_partition)
+    }
+
+    for pt in first_part_points:
+        first_part_points[pt][0] -= offset[0]
+        first_part_points[pt][1] -= offset[1]
+
+    for pt in second_part_points:
+        second_part_points[pt][0] -= offset[0]
+        second_part_points[pt][1] -= offset[1]
+
+    final_pts_dict = {}
+
+    for pt in first_part_points:
+        final_pts_dict[pt] = first_part_points[pt]
+
+    for pt in second_part_points:
+        final_pts_dict[pt] = second_part_points[pt]
+
+    return rescale(final_pts_dict)
+
     
