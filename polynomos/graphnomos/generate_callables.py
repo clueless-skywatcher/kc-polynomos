@@ -3,6 +3,7 @@ from polynomos.graphnomos.graph import SimpleGraphObject
 
 __all__ = [
     "CycleGraph",
+    "CompleteGraph",
     "CompleteBipartiteGraph"
 ]
 
@@ -57,3 +58,30 @@ class CompleteBipartiteGraph(BaseCallable):
                 edges.append(sorted([v1, v2]))
 
         return SimpleGraphObject(vertices, edges, bipartite_parties = [party_1, party_2])
+    
+class CompleteGraph(BaseCallable):
+    '''
+    CompleteGraph(m: int)
+    -------------------------------------
+    Generate a complete graph K_m where all vertices are connected by an edge
+
+    Arguments:
+    - m: integer
+        Number of vertices in the graph
+
+    Returns:
+    A SimpleGraphObject representing the graph K_m
+    '''
+    def eval(m: int):
+        if m < 2:
+            raise ValueError("Complete graphs have at least 2 vertices")
+        vertices = [i + 1 for i in range(m)]
+
+        edges = []
+
+        for i in range(1, m + 1):
+            for j in range(1, m + 1):
+                if i < j:
+                    edges.append([i, j])
+
+        return SimpleGraphObject(vertices, edges)
