@@ -131,8 +131,6 @@ def bipartite_layout(g: SimpleGraphObject, first_partition: list = None):
         for pos in positions:
             positions[pos][0] -= x_mean
             positions[pos][1] -= y_mean
-        import pdb
-        pdb.set_trace()
         if limit > 0:
             for pos in positions:
                 positions[pos][0] *= 1 / limit
@@ -145,7 +143,15 @@ def bipartite_layout(g: SimpleGraphObject, first_partition: list = None):
             first_partition = [GraphVertex(v) for v in g.get_property("bipartite_parties")[0]]
         else:
             first_partition = [GraphVertex(v) for v in range(1, random.randint(2, len(g.get_vertices())))]
-
+    else:
+        temp = []
+        for v in first_partition:
+            if GraphVertex(v) not in g.get_vertices():
+                raise ValueError(f"Vertex {v} is not in the graph")
+            else:
+                temp.append(GraphVertex(v))
+        first_partition = temp
+        
     height = 1
     width = 4 / 3
     offset = (width / 2, height / 2)
