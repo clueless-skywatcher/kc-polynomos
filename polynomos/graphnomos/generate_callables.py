@@ -8,7 +8,16 @@ __all__ = [
 
 class CycleGraph(BaseCallable):
     '''
+    CycleGraph(n: int)
+    -----------------
     Generate a cycle graph of n vertices
+    
+    Arguments:
+    - n: integer
+        Number of vertices in the graph
+
+    Returns:
+    A SimpleGraphObject representing the graph C_n
     '''
     def eval(n: int):
         if n <= 2:
@@ -19,8 +28,19 @@ class CycleGraph(BaseCallable):
     
 class CompleteBipartiteGraph(BaseCallable):
     '''
+    CompleteBipartiteGraph(m: int, n: int)
+    -------------------------------------
     Generate a complete bipartite graph K_{m, n}, where m, n are the lengths of 
     the two parties on either side
+
+    Arguments:
+    - m: integer
+        Number of vertices on left-hand side
+    - n: integer
+        Number of vertices on right-hand side
+
+    Returns:
+    A SimpleGraphObject representing the graph K_{m, n}
     '''
     def eval(m: int, n: int):
         if m < 1 or n < 1:
