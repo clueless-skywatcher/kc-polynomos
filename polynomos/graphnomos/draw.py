@@ -131,6 +131,7 @@ def bipartite_layout(g: SimpleGraphObject, first_partition: list = None):
         for pos in positions:
             positions[pos][0] -= x_mean
             positions[pos][1] -= y_mean
+        
         if limit > 0:
             for pos in positions:
                 positions[pos][0] *= 1 / limit
@@ -185,4 +186,18 @@ def bipartite_layout(g: SimpleGraphObject, first_partition: list = None):
 
     return rescale(final_pts_dict)
 
+def circular_layout(g: SimpleGraphObject):
+    center = (0, 0)
+
+    vertices = g.get_vertices()
     
+    if len(vertices) == 0:
+        return {}
+    elif len(vertices) == 1:
+        return {
+            list(vertices)[0]: center
+        }
+    else:
+        thetas = [float(angle) * 2 * math.pi / len(vertices) for angle in range(len(vertices))]
+        positions = {vertex: (math.cos(theta), math.sin(theta)) for vertex, theta in zip(vertices, thetas)}
+        return positions
