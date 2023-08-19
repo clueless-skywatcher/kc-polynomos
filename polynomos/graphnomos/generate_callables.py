@@ -1,10 +1,14 @@
 from polynomos.graphnomos.callables import BaseCallable
 from polynomos.graphnomos.graph import SimpleGraphObject
+from polynomos.graphnomos.callables import AddEdges, SimpleGraphFromMatrix
 
 __all__ = [
     "CycleGraph",
     "CompleteGraph",
-    "CompleteBipartiteGraph"
+    "CompleteBipartiteGraph",
+    "LCFGraph",
+    "DodecahedralGraph",
+    "PetersenGraph"
 ]
 
 class CycleGraph(BaseCallable):
@@ -12,6 +16,8 @@ class CycleGraph(BaseCallable):
     CycleGraph(n: int)
     -----------------
     Generate a cycle graph of n vertices
+
+    Can be best visualized with CircularLayout
     
     Arguments:
     - n: integer
@@ -33,6 +39,8 @@ class CompleteBipartiteGraph(BaseCallable):
     -------------------------------------
     Generate a complete bipartite graph K_{m, n}, where m, n are the lengths of 
     the two parties on either side
+
+    Can be best visualized with BipartiteLayout
 
     Arguments:
     - m: integer
@@ -65,6 +73,8 @@ class CompleteGraph(BaseCallable):
     -------------------------------------
     Generate a complete graph K_m where all vertices are connected by an edge
 
+    Can be best visualized with CircularLayout
+
     Arguments:
     - m: integer
         Number of vertices in the graph
@@ -85,3 +95,89 @@ class CompleteGraph(BaseCallable):
                     edges.append([i, j])
 
         return SimpleGraphObject(vertices, edges)
+    
+class LCFGraph(BaseCallable):
+    '''
+    LCFGraph(n: int, shifts: list[int], repetitions: int)
+    -------------------------------------
+    Generate a graph using a given LCF notation.
+
+    The Lederberg-Coxeter-Frucht (or LCF, in short) notation is used for
+    cubic (or 3-regular) graphs that have a Hamiltonian cycle. We take in a list
+    of integers `shifts`, and an integer `n`. The `n` nodes are arranged in a cycle,
+    then the remaining third edge from each node is joined according to the `shifts`
+    (1st vertex in the cycle is joined to `shifts[0]` vertices after vertex 1, 2nd 
+    vertex in the cycle is joined to `shifts[1]` vertices after vertex, and so on)
+    The vertices are chosen clockwise if positive, counter-clockwise if negative.
+
+    Can be best visualized with CircularLayout
+
+    Arguments:
+    - n: integer\n
+        Number of vertices in the graph
+    - shifts: list of integers\n
+        Shift for each vertex. Keep in mind, length of shift * repetitions = number of vertices
+    - repetitions: integer\n
+        How many times the given shift sequence is to be repeated
+
+    Returns:
+    A SimpleGraphObject representing the graph generated from the LCF notation
+    '''
+    def eval(n: int, shifts: list[int], repetitions: int = 1):
+        if n != len(shifts) * repetitions:
+            raise ValueError("Number of vertices should be equal to length of shifts * number of repetitions")
+
+        shifts = shifts * repetitions
+        g = CycleGraph(n)
+
+        additional_edges = []
+        vertices = list(g.get_vertices())
+
+        for i in range(n):
+            label = vertices[i].label
+            shifted_label = vertices[(i + shifts[i]) % n].label
+
+            additional_edges.append([label, shifted_label])
+        
+        AddEdges(g, additional_edges)
+        return g
+    
+class DodecahedralGraph(BaseCallable):
+    '''
+    DodecahedralGraph()
+    -------------------------------------
+    Generate the dodecahedral graph of 20 vertices. LCF notation has
+    been used for the generation
+
+    Arguments:
+    - m: integer
+        Number of vertices in the graph
+
+    Returns:
+    A SimpleGraphObject representing the dodecahedral graph
+    '''
+    def eval():
+        return LCFGraph(20, [10, 7, 4, -4, -7, 10, -4, 7, -7,4], 2)
+
+class PetersenGraph(BaseCallable):
+    '''
+    PetersenGraph()
+    -------------------------------------
+    Generate the famous Petersen Graph
+
+    Returns:
+    A SimpleGraphObject representing the Petersen Graph
+    '''
+    def eval():
+        return SimpleGraphFromMatrix([
+            [0,0,0,0,0,0,0,1,1,1],
+            [0,0,0,0,0,1,1,0,0,1],
+            [0,0,0,0,1,0,1,0,1,0],
+            [0,0,0,0,1,1,0,1,0,0],
+            [0,0,1,1,0,0,0,0,0,1],
+            [0,1,0,1,0,0,0,0,1,0],
+            [0,1,1,0,0,0,0,1,0,0],
+            [1,0,0,1,0,0,1,0,0,0],
+            [1,0,1,0,0,1,0,0,0,0],
+            [1,1,0,0,1,0,0,0,0,0]
+        ])
