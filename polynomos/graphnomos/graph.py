@@ -75,19 +75,20 @@ class SimpleGraphObject:
         return self._properties.get(property, None)
 
     def _construct_label_map(self):
-        self.label_map = {vertex.label: i + 1 for i, vertex in enumerate(sorted(list(self._vertices)))}
+        self._label_map = {vertex.label: i + 1 for i, vertex in enumerate(sorted(list(self._vertices)))}
+        self._reverse_label_map = {i + 1: vertex.label for i, vertex in enumerate(sorted(list(self._vertices)))}
 
     def __str__(self) -> str:
         return f"{self.__class__.__name__}{tuple([str(edge) for edge in self._edges])}"
     
     def _construct_adj_matrix(self):
-        self.adj_matrix = [[0] * len(self._vertices) for _ in range(len(self._vertices))] 
+        self._adj_matrix = [[0] * len(self._vertices) for _ in range(len(self._vertices))] 
         for edge in self._edges:
-            i = self.label_map[edge.v1.label] - 1
-            j = self.label_map[edge.v2.label] - 1
+            i = self._label_map[edge.v1.label] - 1
+            j = self._label_map[edge.v2.label] - 1
             
-            self.adj_matrix[i][j] = 1
-            self.adj_matrix[j][i] = 1
+            self._adj_matrix[i][j] = 1
+            self._adj_matrix[j][i] = 1
             
     def __repr__(self) -> str:
         return str(self)
@@ -122,6 +123,32 @@ class SimpleGraphObject:
 
         return SimpleGraphObject(vertices, edges)
     
+    def get_degree_sequence(self, do_sort=False):
+        degrees = []
+        for row in self._adj_matrix:
+            degrees.append(sum(row))
+        
+        if do_sort:
+            degrees = sorted(degrees, reverse=True)
+
+        return degrees
+    
+    def get_degree(self, vertex: int|str|GraphVertex):
+        if isinstance(vertex, str):
+            if vertex not in self._label_map:
+                raise ValueError(f"{vertex} not present in graph")
+            i = self._label_map[vertex] - 1
+            return sum(self._adj_matrix[i])
+        elif isinstance(vertex, int):
+            if GraphVertex(vertex) not in self._vertices:
+                raise ValueError(f"{vertex} not present in graph")
+            return sum(self._adj_matrix[vertex - 1])
+        else:
+            if vertex not in self._vertices:
+                raise ValueError(f"{vertex.label} not present in graph")
+            i = self._label_map[vertex.label] - 1
+            return sum(self._adj_matrix[i])
+    
     def get_edges(self):
         return self._edges
     
@@ -131,8 +158,8 @@ class SimpleGraphObject:
     def _get_adj_matrix(self, as_numpy = False):
         if as_numpy:
             import numpy as np
-            return np.array(self.adj_matrix)
-        return self.adj_matrix
+            return np.array(self._adj_matrix)
+        return self._adj_matrix
     
     def add_edge(self, edge: List):
         if edge[0] > edge[1]:

@@ -1,20 +1,28 @@
-from polynomos.base_callable import BaseCallable
+from collections import Counter
 
+from polynomos.base_callable import BaseCallable
 from polynomos.graphnomos.graph import SimpleGraphObject, GraphVertex
 
 __all__ = [
-    "SimpleGraph",
-    "SimpleGraphFromMatrix",
-    "SimpleGraphFromList",
-    "AdjacencyMatrix",
-    "GraphEdges",
-    "GraphVertices",
-    "VertexCount",
-    "EdgeCount",
-    "AddEdge",
-    "AddEdges",
-    "AddVertex",
-    "AddVertices"
+    'AddEdge',
+    'AddEdges',
+    'AddVertex',
+    'AddVertices',
+    'AdjacencyMatrix',
+    'DegreeFrequency',
+    'DegreeMap',
+    'DegreeSequence',
+    'EdgeCount',
+    'GraphEdges',
+    'GraphVertices',
+    'KRegularQ',
+    'Regularity',
+    'RegularQ',
+    'SimpleGraph',
+    'SimpleGraphFromList',
+    'SimpleGraphFromMatrix',
+    'VertexCount',
+    'VertexDegree'
 ]
 
 class SimpleGraph(BaseCallable):
@@ -150,7 +158,7 @@ class VertexCount(BaseCallable):
     An integer equal to the number of vertices
     '''
     def eval(graph: SimpleGraphObject):
-        return len(graph.get_vertices())
+        return len(GraphVertices(graph))
     
 class EdgeCount(BaseCallable):
     '''
@@ -166,7 +174,7 @@ class EdgeCount(BaseCallable):
     An integer equal to the number of edges
     '''
     def eval(graph: SimpleGraphObject):
-        return len(graph.get_edges())
+        return len(GraphEdges(graph))
     
 class AddEdge(BaseCallable):
     '''
@@ -244,3 +252,142 @@ class AddVertices(BaseCallable):
     def eval(graph: SimpleGraphObject, vertices: list[int|str]):
         for vertex in vertices:
             graph.add_vertex(vertex)
+
+class DegreeSequence(BaseCallable):
+    '''
+    DegreeSequence(graph: SimpleGraphObject, do_sort=True)
+    ----------------------------------------
+    Return the degree sequence of the graph
+
+    Arguments:
+    - graph: SimpleGraphObject\n
+        A SimpleGraphObject representing the graph
+    - do_sort: boolean (defaults to False)\n
+        A boolean specifying whether to sort the degree list 
+        in a non-increasing order
+
+    Returns:\n
+    A list of degrees (in non-increasing order if `do_sort` is `True`)
+    '''
+    def eval(graph: SimpleGraphObject, do_sort=True):
+        return graph.get_degree_sequence(do_sort=do_sort)
+    
+class VertexDegree(BaseCallable):
+    '''
+    VertexDegree(graph: SimpleGraphObject, vertex: int|string)
+    ----------------------------------------
+    Return the degree of a given vertex in a graph
+
+    Arguments:
+    - graph: SimpleGraphObject\n
+        A SimpleGraphObject representing the graph
+    - vertex: int or string\n
+        The label of the vertex we are interested in
+
+    Returns:\n
+    The degree of the vertex as an integer
+    '''
+    def eval(graph: SimpleGraphObject, vertex: int|str):
+        return graph.get_degree(vertex)
+    
+class DegreeMap(BaseCallable):
+    '''
+    DegreeMap(graph: SimpleGraphObject)
+    -----------------------------------
+    Return a map, associating each vertex with its degree
+
+    Arguments:
+    - graph: SimpleGraphObject\n
+        A SimpleGraphObject representing the graph
+
+    Returns:\n
+    A dict mapping each vertex label to its degree
+    '''
+    def eval(graph: SimpleGraphObject):
+        d_map = {}
+        for vertex in GraphVertices(graph):
+            d_map[vertex.label] = VertexDegree(graph, vertex)
+
+        return d_map
+    
+class DegreeFrequency(BaseCallable):
+    '''
+    DegreeFrequency(graph: SimpleGraphObject)
+    -----------------------------------
+    Return a map, containing the frequencies of degrees in the graph
+
+    Arguments:
+    - graph: SimpleGraphObject\n
+        A SimpleGraphObject representing the graph
+
+    Returns:\n
+    A dict mapping each degree to its frequency
+    '''
+    def eval(graph: SimpleGraphObject):
+        d_freq = Counter(DegreeSequence(graph))
+        return dict(d_freq)
+    
+class RegularQ(BaseCallable):
+    '''
+    RegularQ(graph: SimpleGraphObject)
+    -----------------------------------
+    Determines whether the given graph is regular, i.e. each
+    vertex is connected to the same number of vertices
+
+    Arguments:
+    - graph: SimpleGraphObject\n
+        A SimpleGraphObject representing the graph
+
+    Returns:\n
+    True if the graph is regular, False otherwise
+    '''
+    def eval(graph: SimpleGraphObject):
+        deg_freq = DegreeFrequency(graph)
+        for degree in deg_freq:
+            if deg_freq[degree] == VertexCount(graph):
+                return True
+        return False
+    
+class KRegularQ(BaseCallable):
+    '''
+    KRegularQ(graph: SimpleGraphObject)
+    -----------------------------------
+    Determines whether the given graph is k-regular, i.e each
+    vertex is connected to exactly k other vertices
+
+    Arguments:
+    - graph: SimpleGraphObject\n
+        A SimpleGraphObject representing the graph
+    - k: int
+        The value of k for which k-regularity is to be checked
+
+    Returns:\n
+    True if the graph is k-regular, False otherwise
+    '''
+    def eval(graph: SimpleGraphObject, k: int):
+        deg_freq = DegreeFrequency(graph)
+        for degree in deg_freq:
+            if deg_freq[degree] == VertexCount(graph) and degree == k:
+                return True
+        return False
+    
+class Regularity(BaseCallable):
+    '''
+    Regularity(graph: SimpleGraphObject)
+    ------------------------------------
+    Returns the value of k if the given graph is k-regular
+
+    Arguments:
+    - graph: SimpleGraphObject\n
+        A SimpleGraphObject representing the graph
+
+    Returns:
+    An integer representing the value of k for which the graph
+    is k-regular, or -1 if the graph is not regular
+    '''
+    def eval(graph: SimpleGraphObject):
+        deg_freq = DegreeFrequency(graph)
+        for degree in deg_freq:
+            if deg_freq[degree] == VertexCount(graph):
+                return degree
+        return -1
