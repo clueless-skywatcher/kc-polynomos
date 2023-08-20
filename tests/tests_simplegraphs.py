@@ -231,6 +231,102 @@ class TestGraphs(unittest.TestCase):
             [0, 0, 0, 0, 0, 0, 0, 0]
         ])
 
+    def test_degree(self):
+        g1 = SimpleGraph(vertices = [1, 2, 3, 4, 5], edges = [
+            [1, 2],
+            [1, 3],
+            [2, 3],
+            [1, 5],
+            [3, 4]
+        ])
+        self.assertEqual(VertexDegree(g1, 1), 3)
+        self.assertEqual(VertexDegree(g1, 2), 2)
+        self.assertEqual(VertexDegree(g1, 3), 3)
+        self.assertEqual(VertexDegree(g1, 4), 1)
+        self.assertEqual(VertexDegree(g1, 5), 1)
+
+        g1 = SimpleGraph(vertices = ['A', 'B', 'C', 'D', 'E'], edges = [
+            ['A', 'B'],
+            ['A', 'C'],
+            ['B', 'C'],
+            ['A', 'E'],
+            ['C', 'D']
+        ])
+        self.assertEqual(VertexDegree(g1, 'A'), 3)
+        self.assertEqual(VertexDegree(g1, 'B'), 2)
+        self.assertEqual(VertexDegree(g1, 'C'), 3)
+        self.assertEqual(VertexDegree(g1, 'D'), 1)
+        self.assertEqual(VertexDegree(g1, 'E'), 1)
+
+        g1 = SimpleGraph(vertices = [1, 2, 3, 4, 5])
+        for i in range(1, 6):
+            self.assertEqual(VertexDegree(g1, i), 0)
+
+    def test_degree_sequence(self):
+        g1 = SimpleGraph(vertices = [1, 2, 3, 4, 5], edges = [
+            [1, 2],
+            [1, 3],
+            [2, 3],
+            [1, 5],
+            [3, 4]
+        ])
+        self.assertEqual(DegreeSequence(g1, do_sort=False), [3, 2, 3, 1, 1])
+        self.assertEqual(DegreeSequence(g1, do_sort=True), [3, 3, 2, 1, 1])
+
+        g1 = SimpleGraph(vertices = [1, 2, 3, 4, 5])
+        self.assertEqual(DegreeSequence(g1, do_sort=False), [0, 0, 0, 0, 0])
+
+    def test_degree_map(self):
+        g1 = SimpleGraph(vertices = [1, 2, 3, 4, 5], edges = [
+            [1, 2],
+            [1, 3],
+            [2, 3],
+            [1, 5],
+            [3, 4]
+        ])
+        self.assertEqual(DegreeMap(g1), {1: 3, 2: 2, 3: 3, 4: 1, 5: 1})
+
+        g1 = SimpleGraph(vertices = ['A', 'B', 'C', 'D', 'E'], edges = [
+            ['A', 'B'],
+            ['A', 'C'],
+            ['B', 'C'],
+            ['A', 'E'],
+            ['C', 'D']
+        ])
+        self.assertEqual(DegreeMap(g1), {'A': 3, 'B': 2, 'C': 3, 'D': 1, 'E': 1})
+
+    def test_degree_frequency(self):
+        g1 = SimpleGraph(vertices = [1, 2, 3, 4, 5], edges = [
+            [1, 2],
+            [1, 3],
+            [2, 3],
+            [1, 5],
+            [3, 4]
+        ])
+        self.assertEqual(DegreeFrequency(g1), {3: 2, 2: 1, 1: 2})
+
+        petersen = PetersenGraph()
+        self.assertEqual(DegreeFrequency(petersen), {3: 10})
+
+    def test_regularq(self):
+        g1 = SimpleGraph(vertices = [1, 2, 3, 4, 5], edges = [
+            [1, 2],
+            [1, 3],
+            [2, 3],
+            [1, 5],
+            [3, 4]
+        ])
+        self.assertEqual(RegularQ(g1), False)
+        self.assertEqual(KRegularQ(g1, 3), False)
+        self.assertEqual(Regularity(g1), -1)
+        
+        petersen = PetersenGraph()
+        self.assertEqual(RegularQ(petersen), True)
+        self.assertEqual(KRegularQ(petersen, 3), True)
+        self.assertEqual(Regularity(petersen), 3)
+
+
+
 
 if __name__ == '__main__':
     unittest.main()
