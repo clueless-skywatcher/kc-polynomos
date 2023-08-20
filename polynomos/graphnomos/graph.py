@@ -150,3 +150,11 @@ class SimpleGraphObject:
         self._construct_label_map()
         self._construct_adj_matrix()
 
+    def add_vertex(self, vertex: int | str):
+        v = GraphVertex(vertex)
+
+        if v not in self._vertices:
+            self._vertices.add(v)
+
+        self._construct_label_map()
+        self._construct_adj_matrix()

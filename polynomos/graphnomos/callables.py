@@ -12,7 +12,9 @@ __all__ = [
     "VertexCount",
     "EdgeCount",
     "AddEdge",
-    "AddEdges"
+    "AddEdges",
+    "AddVertex",
+    "AddVertices"
 ]
 
 class SimpleGraph(BaseCallable):
@@ -204,3 +206,41 @@ class AddEdges(BaseCallable):
     def eval(graph: SimpleGraphObject, edges: list):
         for edge in edges:
             graph.add_edge(edge)
+
+class AddVertex(BaseCallable):
+    '''
+    AddVertex(graph: SimpleGraphObject, vertex: int|str)
+    --------------------------------------------------
+    Add a vertex to the given graph
+    
+    Arguments:
+    - graph: SimpleGraphObject\n
+        A SimpleGraphObject representing the graph
+    - vertex: integer or string\n
+        The label of the vertex to be added
+
+    Returns:\n
+    None. Only a vertex is added to the graph. Nothing happens
+    if the given vertex already exists in the graph
+    '''
+    def eval(graph: SimpleGraphObject, vertex: int|str):
+        graph.add_vertex(vertex)
+
+class AddVertices(BaseCallable):
+    '''
+    AddVertices(graph: SimpleGraphObject, vertices: list[int|str])
+    --------------------------------------------------
+    Add a list of vertices to the given graph
+    
+    Arguments:
+    - graph: SimpleGraphObject\n
+        A SimpleGraphObject representing the graph
+    - vertices: list of integers or strings\n
+        The labels of the vertices to be added
+
+    Returns:\n
+    None. Only the given vertices are added to the graph.
+    '''
+    def eval(graph: SimpleGraphObject, vertices: list[int|str]):
+        for vertex in vertices:
+            graph.add_vertex(vertex)

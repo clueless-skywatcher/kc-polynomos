@@ -197,6 +197,40 @@ class TestGraphs(unittest.TestCase):
             [1, 1, 1, 0, 0]
         ])
 
+    def test_add_vertices(self):
+        g1 = SimpleGraph(vertices = [1, 2, 3, 4, 5], edges = [
+            [1, 2],
+            [1, 3],
+            [2, 3],
+            [1, 5],
+            [3, 4]
+        ])
+        AddVertex(g1, 6)
+        self.assertEqual(VertexCount(g1), 6)
+        self.assertEqual(EdgeCount(g1), 5)
+        self.assertEqual(AdjacencyMatrix(g1), [
+            [0, 1, 1, 0, 1, 0], 
+            [1, 0, 1, 0, 0, 0], 
+            [1, 1, 0, 1, 0, 0], 
+            [0, 0, 1, 0, 0, 0], 
+            [1, 0, 0, 0, 0, 0], 
+            [0, 0, 0, 0, 0, 0] 
+        ])
+
+        AddVertices(g1, [3, 7, 8])
+        self.assertEqual(VertexCount(g1), 8)
+        self.assertEqual(EdgeCount(g1), 5)
+        self.assertEqual(AdjacencyMatrix(g1), [
+            [0, 1, 1, 0, 1, 0, 0, 0], 
+            [1, 0, 1, 0, 0, 0, 0, 0], 
+            [1, 1, 0, 1, 0, 0, 0, 0], 
+            [0, 0, 1, 0, 0, 0, 0, 0], 
+            [1, 0, 0, 0, 0, 0, 0, 0], 
+            [0, 0, 0, 0, 0, 0, 0, 0], 
+            [0, 0, 0, 0, 0, 0, 0, 0], 
+            [0, 0, 0, 0, 0, 0, 0, 0]
+        ])
+
 
 if __name__ == '__main__':
     unittest.main()
