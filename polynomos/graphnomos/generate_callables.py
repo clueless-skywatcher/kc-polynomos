@@ -1,4 +1,4 @@
-from polynomos.graphnomos.callables import BaseCallable
+from polynomos.graphnomos.callables import BaseCallable, SimpleGraphFromList
 from polynomos.graphnomos.graph import SimpleGraphObject
 from polynomos.graphnomos.callables import AddEdges, SimpleGraphFromMatrix
 
@@ -169,15 +169,15 @@ class PetersenGraph(BaseCallable):
     A SimpleGraphObject representing the Petersen Graph
     '''
     def eval():
-        return SimpleGraphFromMatrix([
-            [0,0,0,0,0,0,0,1,1,1],
-            [0,0,0,0,0,1,1,0,0,1],
-            [0,0,0,0,1,0,1,0,1,0],
-            [0,0,0,0,1,1,0,1,0,0],
-            [0,0,1,1,0,0,0,0,0,1],
-            [0,1,0,1,0,0,0,0,1,0],
-            [0,1,1,0,0,0,0,1,0,0],
-            [1,0,0,1,0,0,1,0,0,0],
-            [1,0,1,0,0,1,0,0,0,0],
-            [1,1,0,0,1,0,0,0,0,0]
-        ])
+        return SimpleGraphFromList({
+            1: [3, 4, 6],
+            2: [4, 5, 7],
+            3: [1, 5, 8],
+            4: [1, 2, 9],
+            5: [2, 3, 10],
+            6: [1, 7, 10],
+            7: [2, 6, 8],
+            8: [3, 7, 9],
+            9: [4, 8, 10],
+            10: [5, 6, 9]
+        })

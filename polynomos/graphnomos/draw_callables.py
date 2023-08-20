@@ -3,12 +3,13 @@ import random
 from polynomos.base_callable import BaseCallable
 from polynomos.graphnomos.draw import (
     draw_graph, fruchterman_reingold_layout, bipartite_layout,
-    circular_layout
+    circular_layout, shell_layout
 )
 from polynomos.graphnomos.graph import GraphVertex, SimpleGraphObject
 
 __all__ = [
     "DrawGraph",
+    "ShellLayout",
     "CircularLayout",
     "BipartiteLayout",
     "FruchtermanReingoldLayout",
@@ -121,3 +122,12 @@ class CircularLayout(BaseCallable):
     '''
     def eval(g: SimpleGraphObject):
         return circular_layout(g)
+    
+class ShellLayout(BaseCallable):
+    def eval(g: SimpleGraphObject, shells: list[list[int]]):
+        for shell in shells:
+            for v in shell:
+                if GraphVertex(v) not in g.get_vertices():
+                    raise ValueError(f"{v} is not present in the graph")
+                
+        return shell_layout(g, shells)
