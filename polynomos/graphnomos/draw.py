@@ -201,3 +201,40 @@ def circular_layout(g: SimpleGraphObject):
         thetas = [float(angle) * 2 * math.pi / len(vertices) for angle in range(len(vertices))]
         positions = {vertex: (math.cos(theta), math.sin(theta)) for vertex, theta in zip(vertices, thetas)}
         return positions
+    
+def shell_layout(g: SimpleGraphObject, shells: list[list[int]]):
+    center = (0, 0)
+
+    vertices = g.get_vertices()
+
+    if len(vertices) == 0:
+        return {}
+    elif len(vertices) == 1:
+        return {
+            list(vertices)[0]: center
+        }
+    else:
+        if len(shells[0]) == 1:
+            radius = 0
+        else:
+            radius = 1.0 / len(shells)
+
+        rotate = math.pi / len(shells)
+        
+        init_rotate = rotate
+
+        positions = {}
+        for shell in shells:
+            thetas = (np.linspace(0, 2 * math.pi, len(shell), endpoint=False, dtype=np.float32) + init_rotate)
+            positions.update(
+                {
+                    GraphVertex(vertex): (
+                        radius * np.cos(theta) + center[0], 
+                        radius * np.sin(theta) + center[1]
+                    ) for vertex, theta in zip(shell, thetas)
+                }
+            )
+            radius += 1.0 / (len(shells))
+            init_rotate += rotate
+        
+        return positions
