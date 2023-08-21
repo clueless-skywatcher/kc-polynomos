@@ -35,6 +35,7 @@ class GraphEdge:
     def __init__(self, v1: GraphVertex, v2: GraphVertex, weight = None) -> None:
         self.v1 = v1
         self.v2 = v2
+        self.weight = weight
         
     def __eq__(self, other):
         if not isinstance(other, GraphEdge):
@@ -45,7 +46,7 @@ class GraphEdge:
         return not self.__eq__(other)
 
     def __str__(self) -> str:
-        return f"GraphEdge({str(self.v1)}--{str(self.v2)})"
+        return f"GraphEdge({str(self.v1)}-{str(self.weight) if self.weight is not None else ''}-{str(self.v2)})"
     
     def __repr__(self) -> str:
         return str(self)
@@ -54,15 +55,19 @@ class GraphEdge:
         return hash(tuple(sorted([self.v1, self.v2])))
 
 class SimpleGraphObject:
-    def __init__(self, vertices: List, edges: List, **properties) -> None:
+    def __init__(self, vertices: List, edges: List = None, **properties) -> None:
         if all([isinstance(x, (int, str)) for x in vertices]):
             self._vertices = set([GraphVertex(x) for x in vertices])
         else:
             self._vertices = set(vertices)
-        if edges is None:
-            self._edges = set()
-        else:
-            self._edges = set(GraphEdge(GraphVertex(edge[0]), GraphVertex(edge[1])) for edge in edges)
+        self._edges = set()
+        if edges is not None:
+            for edge in edges:
+                if len(edge) == 3:
+                    self._edges.add(GraphEdge(GraphVertex(edge[0]), GraphVertex(edge[1]), weight=edge[2]))
+                else:
+                    self._edges.add(GraphEdge(GraphVertex(edge[0]), GraphVertex(edge[1])))
+
         
         self._construct_label_map()
         self._construct_adj_matrix()
@@ -164,7 +169,9 @@ class SimpleGraphObject:
     def add_edge(self, edge: List):
         if edge[0] > edge[1]:
             edge[0], edge[1] = edge[1], edge[0]
-
+        edge_wt = None
+        if len(edge) == 3:
+            edge_wt = edge[2]
         v1 = GraphVertex(edge[0])
         v2 = GraphVertex(edge[1])
 
@@ -173,9 +180,26 @@ class SimpleGraphObject:
         if v2 not in self._vertices:
             self._vertices.add(v2)
 
-        self._edges.add(GraphEdge(v1, v2))
+        self._edges.add(GraphEdge(v1, v2, weight=edge_wt))
         self._construct_label_map()
         self._construct_adj_matrix()
+
+    def remove_edge(self, edge: List, add_weight_mode=False):
+        if edge[0] > edge[1]:
+            edge[0], edge[1] = edge[1], edge[0]
+        
+        v1 = GraphVertex(edge[0])
+        v2 = GraphVertex(edge[1])
+
+        if v1 not in self._vertices:
+            raise ValueError(f"{v1.label} not present in graph")
+        if v2 not in self._vertices:
+            raise ValueError(f"{v2.label} not present in graph")
+        
+        self._edges.remove(GraphEdge(v1, v2))
+        if add_weight_mode == False:
+            self._construct_label_map()
+            self._construct_adj_matrix()
 
     def add_vertex(self, vertex: int | str):
         v = GraphVertex(vertex)

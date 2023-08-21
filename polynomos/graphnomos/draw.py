@@ -96,7 +96,14 @@ def draw_graph(g: SimpleGraphObject, points = None, algorithm = "fruchterman_rei
     for edge in g.get_edges():
         x1, y1 = points[edge.v1]
         x2, y2 = points[edge.v2]
+
         plt.plot([x1, x2], [y1, y2], 'k-', lw=1, zorder=1)
+
+        if edge.weight is not None:
+            weight = edge.weight
+            mid_x, mid_y = (x1 + x2) / 2, (y1 + y2) / 2
+
+            plt.text(mid_x, mid_y, str(weight), fontsize=15, ha='center', va='center')
 
     # Draw nodes
     for node, pos in points.items():
