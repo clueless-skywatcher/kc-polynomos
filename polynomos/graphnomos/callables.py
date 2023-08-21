@@ -1,11 +1,14 @@
 from collections import Counter
+from typing import Iterable
 
 from polynomos.base_callable import BaseCallable
-from polynomos.graphnomos.graph import SimpleGraphObject, GraphVertex
+from polynomos.graphnomos.graph import GraphEdge, SimpleGraphObject, GraphVertex
 
 __all__ = [
     'AddEdge',
     'AddEdges',
+    'AddEdgeWeight',
+    'AddEdgeWeights',
     'AddVertex',
     'AddVertices',
     'AdjacencyMatrix',
@@ -16,6 +19,7 @@ __all__ = [
     'GraphEdges',
     'GraphVertices',
     'KRegularQ',
+    'MakeWeighted',
     'Regularity',
     'RegularQ',
     'SimpleGraph',
@@ -34,9 +38,10 @@ class SimpleGraph(BaseCallable):
     Arguments:
     - vertices: list of integers/strings\n
         The vertex labels of the graph
-    - edges (optional): list of lists of 2 integers/strings\n
+    - edges (optional): list of lists of 2 integers/strings (each 
+            optionally followed by a third float)\n
         The edges of the graph, each represented as a list of 2 
-        vertex labels
+        vertex labels and an optional third number denoting it's weight
 
     Returns:\n
     A SimpleGraphObject representing the graph
@@ -70,6 +75,90 @@ class SimpleGraphFromMatrix(BaseCallable):
             vertices = [i + 1 for i in range(len(adjacency_matrix))]
         
         return SimpleGraphObject._from_adjacency_matrix(adjacency_matrix, labels=vertices)
+    
+class MakeWeighted(BaseCallable):
+    '''
+    MakeWeighted(graph: SimpleGraphObject, default_weight: float=1)
+    --------------------------------------
+    Make a weighted version of a given simple graph
+
+    Arguments:
+    - graph: SimpleGraphObject
+        Graph that we need a weighted version of
+    - default_weight: float/int
+        The weights of unweighted edges are initialized to
+        `default_weight`. Defaults to 1
+
+    Returns:
+    A SimpleGraphObject representing the weighted version of the given graph, 
+    with `default_value` weight assigned to edges that were already unweighted 
+    in the original graph
+    '''
+    def eval(graph: SimpleGraphObject, default_weight: float = 1):
+        edges = GraphEdges(graph)
+        vertices = GraphVertices(graph)
+        weighted_edges = []
+        for edge in edges:
+            if edge.weight is None:
+                wt = default_weight
+            else:
+                wt = edge.weight
+            weighted_edges.append(
+                [edge.v1.label, edge.v2.label, wt]
+            )
+        
+        return SimpleGraphObject(vertices, weighted_edges)
+    
+class AddEdgeWeight(BaseCallable):
+    '''
+    AddEdgeWeight(graph: SimpleGraphObject, edge: list[int|str], weight: float)
+    --------------------------------------
+    Assign a weight to an edge in the given graph
+
+    Arguments:
+    - graph: SimpleGraphObject
+        Graph that we need a weighted version of
+    - edge: list/tuple of 2 integers/strings
+        The graph edge, represented as a list/tuple of 2 integers/strings
+        representing the end vertex labels
+    - weight: float or integer
+        The weight to be assigned to the edge
+
+    Raises:
+    - ValueError: If the provided edge does not exist in the graph
+
+    Returns:
+    None. Only the weight is assigned to the edge in the given graph
+    '''
+    def eval(graph: SimpleGraphObject, edge: Iterable[int|str], weight: float|int):
+        edges = GraphEdges(graph)
+        edge_obj = GraphEdge(*sorted([GraphVertex(edge[0]), GraphVertex(edge[1])]))
+        if edge_obj not in edges:
+            raise ValueError(f"The given edge {edge} is not in the graph")
+        graph.remove_edge(edge)
+        graph.add_edge([edge[0], edge[1], weight])
+        
+class AddEdgeWeights(BaseCallable):
+    '''
+    AddEdgeWeight(graph: SimpleGraphObject, weight_dict: dict[tuple, float])
+    --------------------------------------
+    Assign weights to given edges in a graph
+
+    Arguments:
+    - graph: SimpleGraphObject
+        Graph that we need a weighted version of
+    - weight_dict: dict object mapping edge (in tuple form) to weights
+        to be assigned
+
+    Raises:
+    - ValueError: If any of the provided edges does not exist in the graph
+
+    Returns:
+    None. Only the weight is assigned to the given edges in the given graph
+    '''
+    def eval(graph: SimpleGraphObject, weight_dict: dict[tuple, float]):
+        for edge in weight_dict:
+            AddEdgeWeight(graph, edge, weight_dict[edge])
 
 class SimpleGraphFromList(BaseCallable):
     '''
@@ -185,9 +274,10 @@ class AddEdge(BaseCallable):
     Arguments:
     - graph: SimpleGraphObject\n
         A SimpleGraphObject representing the graph
-    - edge: list of 2 integers or strings
+    - edge: list of 2 integers or strings, optionally followed by a third number
         A list representing the edge, with list elements representing
-        the ends of the edge
+        the ends of the edge. You can add an optional 3rd element to the list
+        to denote the edge's weight
     
     Returns:\n
     None. Only an edge is added to the given graph
@@ -197,16 +287,19 @@ class AddEdge(BaseCallable):
 
 class AddEdges(BaseCallable):
     '''
-    AddEdges(graph: SimpleGraphObject, edge: list[list[int|string]])
+    AddEdges(graph: SimpleGraphObject, edges: list[list[int|string]])
     --------------------------------------------------
     Add one or more edges to a given graph from a given list
     
     Arguments:
     - graph: SimpleGraphObject\n
         A SimpleGraphObject representing the graph
-    - edge: list of 2 integers or strings
+    - edges: list of lists of 2 integers or strings, each optionally followed 
+        by a third number
+
         A list representing the edge, with list elements representing
-        the ends of the edge
+        the ends of the edge. You can add an optional 3rd element to each edge 
+        list to denote the edge's weight
     
     Returns:\n
     None. Only an edge is added to the given graph
