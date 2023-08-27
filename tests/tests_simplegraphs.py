@@ -325,6 +325,71 @@ class TestGraphs(unittest.TestCase):
         self.assertEqual(KRegularQ(petersen, 3), True)
         self.assertEqual(Regularity(petersen), 3)
 
+    def test_neighbours(self):
+        g1 = SimpleGraph(vertices = [1, 2, 3, 4, 5], edges = [
+            [1, 2],
+            [1, 3],
+            [2, 3],
+            [1, 5],
+            [3, 4]
+        ])
+        self.assertEqual(GraphNeighbours(g1, 1), {2, 3, 5})
+        self.assertEqual(GraphNeighbours(g1, 2), {1, 3})
+        self.assertEqual(GraphNeighbours(g1, 3), {1, 2, 4})
+        self.assertEqual(GraphNeighbours(g1, 4), {3})
+        self.assertEqual(GraphNeighbours(g1, 5), {1})
+        self.assertEqual(GraphNeighbours(g1, GraphVertex(1)), {2, 3, 5})
+        self.assertEqual(GraphNeighbours(g1, GraphVertex(2)), {1, 3})
+        self.assertEqual(GraphNeighbours(g1, GraphVertex(3)), {1, 2, 4})
+        self.assertEqual(GraphNeighbours(g1, GraphVertex(4)), {3})
+        self.assertEqual(GraphNeighbours(g1, GraphVertex(5)), {1})
+
+
+        g2 = SimpleGraph(vertices = ['A', 'B', 'C', 'D', 'E'], edges = [
+            ['B', 'A'],
+            ['A', 'C'],
+            ['B', 'C'],
+            ['A', 'E'],
+            ['C', 'D']
+        ])
+        self.assertEqual(GraphNeighbours(g2, GraphVertex('A')), {'B', 'C', 'E'})
+        self.assertEqual(GraphNeighbours(g2, GraphVertex('B')), {'A', 'C'})
+        self.assertEqual(GraphNeighbours(g2, GraphVertex('C')), {'A', 'B', 'D'})
+        self.assertEqual(GraphNeighbours(g2, GraphVertex('D')), {'C'})
+        self.assertEqual(GraphNeighbours(g2, GraphVertex('E')), {'A'})
+
+    def test_mycielskian(self):
+        g1 = SimpleGraph(vertices = [1, 2, 3, 4], edges = [
+            [1, 2],
+            [2, 3],
+            [3, 1],
+            [4, 3]
+        ])
+
+        myc = Mycielskian(g1)
+        self.assertEqual(GraphVertices(myc), set([GraphVertex(i + 1) for i in range(2 * len(GraphVertices(g1)) + 1)]))
+        self.assertEqual(GraphEdges(myc), set(
+            [GraphEdge(GraphVertex(edge[0]), GraphVertex(edge[1])) for edge in [
+                [1, 2],
+                [2, 3],
+                [1, 3],
+                [3, 4],
+                [2, 5],
+                [3, 5],
+                [1, 6],
+                [3, 6],
+                [2, 7],
+                [1, 7],
+                [4, 7],
+                [3, 8],
+                [5, 9],
+                [6, 9],
+                [7, 9],
+                [8, 9]
+            ]])
+        )
+        self.assertEqual(VertexCount(myc), 2 * VertexCount(g1) + 1)
+        self.assertEqual(EdgeCount(myc), 3 * EdgeCount(g1) + VertexCount(g1))
 
 
 

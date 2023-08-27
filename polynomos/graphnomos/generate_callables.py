@@ -1,14 +1,18 @@
-from polynomos.graphnomos.callables import BaseCallable, SimpleGraphFromList
+from polynomos.graphnomos.callables import BaseCallable, GraphEdges, GraphNeighbours, SimpleGraphFromList
 from polynomos.graphnomos.graph import SimpleGraphObject
-from polynomos.graphnomos.callables import AddEdges, SimpleGraphFromMatrix
+from polynomos.graphnomos.callables import (
+    AddEdges, 
+    GraphVertices
+)
 
 __all__ = [
-    "CycleGraph",
-    "CompleteGraph",
-    "CompleteBipartiteGraph",
-    "LCFGraph",
-    "DodecahedralGraph",
-    "PetersenGraph"
+    'CycleGraph',
+    'CompleteGraph',
+    'CompleteBipartiteGraph',
+    'LCFGraph',
+    'Mycielskian',
+    'DodecahedralGraph',
+    'PetersenGraph'
 ]
 
 class CycleGraph(BaseCallable):
@@ -181,3 +185,75 @@ class PetersenGraph(BaseCallable):
             9: [4, 8, 10],
             10: [5, 6, 9]
         })
+
+class Mycielskian(BaseCallable):
+    '''
+    Mycielskian(graph: SimpleGraphObject, u_label_prefix: str = None, v_label: str = None)
+    -------------------------------------
+    Generate the Mycielskian of a given graph.
+
+    The Mycielskian of an undirected graph is a larger graph
+    that preserves triangle-freedom, i.e. if the original graph
+    doesn't have triangles, it's Mycielskian won't have triangles
+    as well, and it will if the original graph has triangles.
+    Construction is fairly simple: 
+        1) Take a new set of vertices, equal to the number of vertices 
+        in the original graph + 1, label them u_1, u_2, ..., u_n, v, 
+        where n is the number of original vertices. 
+        2) Connect each u_i to all the neighbours of v_i
+        3) Connect the v to all the u_i.
+
+    Note: The original labels in the graph are lost and are renamed to
+    1, 2, ..., n
+
+    Arguments:
+    - graph: SimpleGraphObject
+        The graph whose Mycielskian is to be generated
+    - u_label_prefix: str or None (optional)
+        Prefix to be assigned to the new 'u' vertices. If None,
+        it just assigns numbers. Defaults to None.
+        E.g: If u_label_prefix = 'u', then the new vertices will
+        be labeled 'u1', 'u2', etc.
+    - v_label: str or None (optional)
+        Label to be assigned to the new 'v' vertex. If None,
+        it just assigns a number. Defaults to None.
+        E.g: If v_label = 'v', then the new vertex will
+        be labeled 'v'
+
+    Returns:
+    A SimpleGraphObject representing the Mycielskian of the graph
+    '''
+    def eval(graph: SimpleGraphObject, u_label_prefix: str|None = None, v_label: str|None = None):
+        vertices = GraphVertices(graph)
+        new_labels = sorted([graph._label_map[v.label] for v in vertices])
+
+        u_labels = [i for i in range(1, len(vertices) + 1)]
+        if u_label_prefix is not None:
+            u_labels = [u_label_prefix + str(label) for label in u_labels]
+        else:
+            u_labels = [new_labels[-1] + label for label in u_labels]
+        
+        v = 2 * len(vertices) + 1
+        if v_label is not None:
+            v = v_label
+
+        edges = [[edge.v1, edge.v2] for edge in GraphEdges(graph)]
+        for i in range(len(edges)):
+            edge = edges[i]
+            edge_label1 = graph._label_map[edge[0].label]
+            edge_label2 = graph._label_map[edge[1].label]
+            edges[i] = [edge_label1, edge_label2]
+
+        for label, u_label in zip(new_labels, u_labels):
+            neighbours = [graph._label_map[neighbour] for neighbour in GraphNeighbours(graph, label)]
+            for neighbour in neighbours:
+                edges.append(
+                    [u_label, neighbour]
+                )
+        
+        for u_label in u_labels:
+            edges.append(
+                [u_label, v]
+            )
+
+        return SimpleGraphObject(new_labels + u_labels + [v], edges)

@@ -17,6 +17,7 @@ __all__ = [
     'DegreeSequence',
     'EdgeCount',
     'GraphEdges',
+    'GraphNeighbours',
     'GraphVertices',
     'KRegularQ',
     'MakeWeighted',
@@ -484,3 +485,36 @@ class Regularity(BaseCallable):
             if deg_freq[degree] == VertexCount(graph):
                 return degree
         return -1
+
+class GraphNeighbours(BaseCallable):
+    '''
+    GraphNeighbours(graph: SimpleGraphObject, vertex: int|str|GraphVertex, return_objs: bool = False)
+    ------------------------------------
+    Returns a list of the neighbours of a given vertex in a given graph
+
+    Arguments:
+    - graph: SimpleGraphObject
+        A SimpleGraphObject representing the graph
+    - vertex: integer, string or a GraphVertex object
+        The vertex whose neighbours are to be returned
+    - return_objs: boolean (optional)
+        Whether a list of GraphVertex objects should be
+        returned or just labels. True means GraphVertex objects
+        will be returned. Defaults to False
+
+    Returns:
+    A list of vertex labels (or objects), each corresponding to a 
+    neighbour of the given vertex
+    '''
+    def eval(graph: SimpleGraphObject, vertex: int | str | GraphVertex, return_objs = False):
+        if isinstance(vertex, GraphVertex):
+            v_label = vertex.label
+            return GraphNeighbours(graph, v_label)
+        if isinstance(vertex, (int, str)):
+            v_label = graph._label_map[vertex]
+            neighbours = set()
+            adj = AdjacencyMatrix(graph)
+            for i in range(len(adj[v_label - 1])):
+                if adj[v_label - 1][i] == 1:
+                    neighbours.add(graph._reverse_label_map[i + 1])
+            return neighbours
